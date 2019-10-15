@@ -1,0 +1,8 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: nextagea_description
+    relative_path: urdf/NextageAOpen.urdf
+  SRDF:
+    relative_path: config/NextageAOpen.srdf
+  CONFIG:
+    generated_timestamp: 1382894286
