@@ -4,7 +4,7 @@
 # Publish all joint states -----------------------------------
 joint_state_controller:
   type: joint_state_controller/JointStateController
-  publish_rate: 100
+  publish_rate: 50
 
   # Position Controllers (arms) ---------------------------------------
 CHEST_JOINT0_position_controller:
@@ -101,14 +101,14 @@ larm_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    LARM_JOINT0: {p: 150, i: 0, d: 2}
-    LARM_JOINT1: {p: 150, i: 0, d: 2}
-    LARM_JOINT2: {p: 150, i: 0, d: 2}
-    LARM_JOINT3: {p: 150, i: 0, d: 2}
-    LARM_JOINT4: {p: 150, i: 0, d: 2}
-    LARM_JOINT5: {p: 10, i: 0, d: 0.5}
-  state_publish_rate:  1000            # Override default
-  action_monitor_rate: 1000            # Override default
+    LARM_JOINT0: {p: 1500, i: 10, d: 1}
+    LARM_JOINT1: {p: 1500, i: 10, d: 1}
+    LARM_JOINT2: {p: 1500, i: 10, d: 1}
+    LARM_JOINT3: {p: 1500, i: 10, d: 1}
+    LARM_JOINT4: {p: 1500, i: 10, d: 1}
+    LARM_JOINT5: {p: 100, i: 2, d: 0.5}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
 
 
@@ -145,14 +145,14 @@ rarm_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    RARM_JOINT0: {p: 150, i: 0, d: 2}
-    RARM_JOINT1: {p: 150, i: 0, d: 2}
-    RARM_JOINT2: {p: 150, i: 0, d: 2}
-    RARM_JOINT3: {p: 150, i: 0, d: 2}
-    RARM_JOINT4: {p: 150, i: 0, d: 2}
-    RARM_JOINT5: {p: 10, i: 0, d: 0.5}
-  state_publish_rate:  1000            # Override default
-  action_monitor_rate: 1000            # Override default
+    RARM_JOINT0: {p: 1500, i: 10, d: 1}
+    RARM_JOINT1: {p: 1500, i: 10, d: 1}
+    RARM_JOINT2: {p: 1500, i: 10, d: 1}
+    RARM_JOINT3: {p: 1500, i: 10, d: 1}
+    RARM_JOINT4: {p: 1500, i: 10, d: 1}
+    RARM_JOINT5: {p: 100, i: 2, d: 0.5}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
 
 
@@ -173,10 +173,10 @@ head_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    HEAD_JOINT0: {p: 150, i: 0, d: 2}
-    HEAD_JOINT1: {p: 150, i: 0, d: 2}
-  state_publish_rate:  1000            # Override default
-  action_monitor_rate: 1000            # Override default
+    HEAD_JOINT0: {p: 1500, i: 5, d: 1}
+    HEAD_JOINT1: {p: 1500, i: 5, d: 10}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
 
 
@@ -193,8 +193,8 @@ torso_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    CHEST_JOINT0: {p: 150, i: 0, d: 2}
-  state_publish_rate:  1000            # Override default
-  action_monitor_rate: 1000            # Override default
+    CHEST_JOINT0: {p: 1500, i: 5, d: 100}
+  state_publish_rate:  100            # Override default
+  action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
 
