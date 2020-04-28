@@ -35,4 +35,49 @@
 
   <!-- TODO hand cameras can be added here with the very similar code as
             headmount cameras. -->
+
+  <!-- Gazebo-Specific Link Properties (FROM BAXTER) -->
+  <gazebo reference="CHEST_JOINT0">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="HEAD_JOINT0">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+   <gazebo reference="LARM_JOINT0">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT1">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo> 
+  <gazebo reference="LARM_JOINT2">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT3">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT4">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT5">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT0">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT1">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo> 
+  <gazebo reference="RARM_JOINT2">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT3">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT4">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT5">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo> 
+
 </robot>

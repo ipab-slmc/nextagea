@@ -13,7 +13,7 @@
        xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
        xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics"
        xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:include filename="$(find nextage_description)/urdf/materials.urdf.xacro" />
+  <xacro:include filename="$(find nextagea_description)/urdf/materials.urdf.xacro" />
 
   <xacro:macro name="gazebo_nx_link" params="name color">
     <gazebo reference="gazebo_${name}">
@@ -439,6 +439,7 @@
     <origin xyz="0.04 0.135 0.1015" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.5707963" upper="1.5707963" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
   <xacro:transmission_nx_joint name="LARM_JOINT1" />
@@ -448,6 +449,7 @@
     <origin xyz="0 0 0.066" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.44346" upper="1.0471975" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
@@ -458,6 +460,7 @@
     <origin xyz="0 0.095 -0.25" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.22173" upper="1.5707963" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
@@ -468,6 +471,7 @@
     <origin xyz="0.1805 0 -0.03" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit lower="-3.1415926" upper="1.7453292" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
   <xacro:transmission_nx_joint name="LARM_JOINT4" />
@@ -477,6 +481,7 @@
     <origin xyz="0.1495 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-3.57792" upper="1.134464" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
@@ -487,6 +492,7 @@
     <origin xyz="0 0 -0.1335" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-4.7123889" upper="4.7123889" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
   <xacro:transmission_nx_joint name="RARM_JOINT0" />
@@ -496,6 +502,7 @@
     <origin xyz="0.04 -0.135 0.1015" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.570796" upper="1.570796" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
@@ -506,6 +513,7 @@
     <origin xyz="0 0 0.066" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.44346" upper="1.047197" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
@@ -516,6 +524,7 @@
     <origin xyz="0 -0.095 -0.25" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.22173" upper="1.570796" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
@@ -526,6 +535,7 @@
     <origin xyz="0.1805 0 -0.03" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit lower="-1.74532" upper="3.141592" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
@@ -536,6 +546,7 @@
     <origin xyz="0.1495 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-3.5779" upper="1.134464" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
@@ -546,6 +557,7 @@
     <origin xyz="0 0 -0.1335" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-4.712388" upper="4.712388" effort="150" velocity="1.0"/>
+    <dynamics damping="1.5" friction="0"/>
   </joint>
 
 
