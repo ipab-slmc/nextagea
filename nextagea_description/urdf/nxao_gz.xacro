@@ -36,14 +36,17 @@
   <!-- TODO hand cameras can be added here with the very similar code as
             headmount cameras. -->
 
-  <!-- Gazebo-Specific Link Properties (FROM BAXTER) -->
+  <!-- Gazebo-Specific Link Properties -->
   <gazebo reference="CHEST_JOINT0">
     <implicitSpringDamper>1</implicitSpringDamper>
   </gazebo>
   <gazebo reference="HEAD_JOINT0">
     <implicitSpringDamper>1</implicitSpringDamper>
   </gazebo>
-   <gazebo reference="LARM_JOINT0">
+  <gazebo reference="HEAD_JOINT1">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT0">
     <implicitSpringDamper>1</implicitSpringDamper>
   </gazebo>
   <gazebo reference="LARM_JOINT1">
