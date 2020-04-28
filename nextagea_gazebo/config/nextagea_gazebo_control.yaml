@@ -101,12 +101,12 @@ larm_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    LARM_JOINT0: {p: 1500, i: 10, d: 1}
-    LARM_JOINT1: {p: 1500, i: 10, d: 1}
-    LARM_JOINT2: {p: 1500, i: 10, d: 1}
-    LARM_JOINT3: {p: 1500, i: 10, d: 1}
-    LARM_JOINT4: {p: 1500, i: 10, d: 1}
-    LARM_JOINT5: {p: 100, i: 2, d: 0.5}
+    LARM_JOINT0: {p: 100, i: 0, d: 1}
+    LARM_JOINT1: {p: 200, i: 0, d: 1}
+    LARM_JOINT2: {p: 500, i: 0, d: 10}
+    LARM_JOINT3: {p: 100, i: 0, d: 10}
+    LARM_JOINT4: {p: 400, i: 0, d: 10}
+    LARM_JOINT5: {p: 100, i: 0, d: 1}
   state_publish_rate:  100            # Override default
   action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
@@ -145,12 +145,12 @@ rarm_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    RARM_JOINT0: {p: 1500, i: 10, d: 1}
-    RARM_JOINT1: {p: 1500, i: 10, d: 1}
-    RARM_JOINT2: {p: 1500, i: 10, d: 1}
-    RARM_JOINT3: {p: 1500, i: 10, d: 1}
-    RARM_JOINT4: {p: 1500, i: 10, d: 1}
-    RARM_JOINT5: {p: 100, i: 2, d: 0.5}
+    RARM_JOINT0: {p: 100, i: 0, d: 1}
+    RARM_JOINT1: {p: 200, i: 0, d: 1}
+    RARM_JOINT2: {p: 500, i: 0, d: 10}
+    RARM_JOINT3: {p: 100, i: 0, d: 10}
+    RARM_JOINT4: {p: 400, i: 0, d: 10}
+    RARM_JOINT5: {p: 100, i: 0, d: 1}
   state_publish_rate:  100            # Override default
   action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
@@ -193,7 +193,7 @@ torso_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    CHEST_JOINT0: {p: 1500, i: 5, d: 100}
+    CHEST_JOINT0: {p: 1000, i: 0, d: 100}
   state_publish_rate:  100            # Override default
   action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
