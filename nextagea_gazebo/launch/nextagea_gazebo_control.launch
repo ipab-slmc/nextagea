@@ -12,5 +12,5 @@
                                            head_controller
                                            torso_controller
                                          "/>
-  <node name="go_initial" pkg="nextagea_gazebo"  type="go_initial.py" />
+  <!-- <node name="go_initial" pkg="nextagea_gazebo"  type="go_initial.py" /> -->
 </launch>
