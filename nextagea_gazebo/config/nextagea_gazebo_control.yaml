@@ -173,8 +173,8 @@ head_controller:
       goal: 0.02                     # Not enforced if unspecified
 
   gains: # Required because we're controlling an effort interface
-    HEAD_JOINT0: {p: 1500, i: 5, d: 1}
-    HEAD_JOINT1: {p: 1500, i: 5, d: 10}
+    HEAD_JOINT0: {p: 600, i: 0, d: 10}
+    HEAD_JOINT1: {p: 600, i: 0, d: 10}
   state_publish_rate:  100            # Override default
   action_monitor_rate: 100            # Override default
   stop_trajectory_duration: 0        # Override default
