@@ -35,7 +35,7 @@
   </xacro:macro>
 
   <!-- Used for fixing robot to Gazebo 'base_link' -->
-  <link name="world"/> -->
+  <link name="world"/> 
   <joint name="fixed" type="fixed">
     <parent link="world"/>
     <child link="WAIST"/>
