@@ -39,10 +39,16 @@
     <link name="world"/> -->
     <joint name="fixed" type="fixed">
       <parent link="world"/>
-      <child link="WAIST"/>
+      <child link="nextage_base"/>
     </joint>
   </xacro:if>
 
+  <!-- Work-around for KDL base-link inertia problem; also adheres to ROS standard-->
+  <link name="nextage_base"/>
+  <joint name="base_to_waist" type="fixed">
+    <parent link="nextage_base"/>
+    <child link="WAIST"/>
+  </joint>
 
   <xacro:gazebo_nx_link name="WAIST" color="Black" />
   <link name="WAIST">
