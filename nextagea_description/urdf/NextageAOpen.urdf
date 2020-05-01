@@ -18,6 +18,12 @@
   <xacro:macro name="gazebo_nx_link" params="name color">
     <gazebo reference="gazebo_${name}">
       <material>Gazebo/${color}</material>
+      <mu1 value="100.0" />
+      <mu2 value="100.0" />
+      <kp  value="1000000.0" />
+      <kd  value="1.0" />
+      <maxVel  value="100.0" />
+      <minDepth  value="0.0" />
     </gazebo>
   </xacro:macro>
 
