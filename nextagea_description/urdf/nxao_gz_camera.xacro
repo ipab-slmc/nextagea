@@ -29,9 +29,9 @@
 			</visual>
 			<inertial>
 				<origin xyz="0 0 0" rpy="0 0 0" />
-				<mass value="0" />
-				<inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0"
-					izz="0.0" />
+				<mass value="1e-6" />
+				<inertia ixx="1e-12" ixy="0.0" ixz="0.0" iyy="1e-12" iyz="0.0"
+					izz="1e-12" />
 			</inertial>
 		</link>
 		<gazebo reference="${camera_name}_Link">
