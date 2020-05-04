@@ -47,6 +47,7 @@
     <joint name="fixed" type="fixed">
       <parent link="world"/>
       <child link="nextage_base"/>
+      <origin xyz="0 0 -0.15" rpy="0 0 0"/>
     </joint>
   </xacro:if>
 
