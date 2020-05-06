@@ -4,6 +4,7 @@ import pyexotica as exo
 from pyexotica.publish_trajectory import *
 import signal
 import sys
+import warnings
 import rospy
 from time import sleep
 import numpy as np
@@ -11,6 +12,11 @@ from pyexotica.tools import check_whether_trajectory_is_collision_free_by_subsam
 from trajectory_msgs.msg import JointTrajectoryPoint, JointTrajectory
 from sensor_msgs.msg import JointState
 from control_msgs.msg import JointTrajectoryControllerState
+
+class colours:
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
 
 class SelfCollisionCheck:
     '''Self-collision checker for the Nextage platform. Node sits in front of trajectory controller and filters
@@ -49,18 +55,22 @@ class SelfCollisionCheck:
                 # current_arms = list(self.larm_state.actual.positions) += list(self.rarm_state.actual.positions)
                 current_arms = list(self.rarm_state.actual.positions)
 
-                # Process JointTrajectory to be EXOTica solution form
-                print("TESTING")
+                # Strip JointTrajectory down to be in EXOTica solution form
                 list_traj = [current_arms]
-
                 for i in range(0, len(self.trajectory_message.points)):
                     list_traj.append(list(self.trajectory_message.points[i].positions))
-
                 exotica_traj = np.array([np.array(x) for x in list_traj])
-                print(exotica_traj)
 
-                print(check_whether_trajectory_is_collision_free_by_subsampling(self.problem.get_scene(), exotica_traj))
-                print(get_colliding_links(self.problem.get_scene()))
+                traj_check = check_whether_trajectory_is_collision_free_by_subsampling(self.problem.get_scene(), exotica_traj)
+
+                if traj_check:
+                    # Pass through trajectory
+                    self.output_traj.publish(self.trajectory_message)
+                else:
+                    print(colours.WARNING + "[ WARN ] Self-collision detected on following links")
+                    get_colliding_links(self.problem.get_scene())
+                    print(colours.ENDC)
+                
                 self.check_trajectory = False
 
             self.rate.sleep()
