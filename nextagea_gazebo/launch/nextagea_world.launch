@@ -39,7 +39,7 @@
   <!-- start self-collision checker -->
   <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen">
     <remap from="~traj_input" to="/rarm_controller/command" />
-    <remap from="~traj_output" to="/rarm_controller/command" />
+    <remap from="~traj_output" to="/self_collision_check/output" />
     <remap from="~larm_input" to="/larm_controller/state" />
     <remap from="~rarm_input" to="/rarm_controller/state" />
   </node>

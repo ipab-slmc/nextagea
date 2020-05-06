@@ -26,6 +26,9 @@ class SelfCollisionCheck:
         # Initial setup and sub/pub to nodes
         self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.callback, queue_size=1)
         self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
+
+        # TODO: Perhaps this would be better setup as a ROS service that keeps a track of the current robot state
+        # at a set rate (say 2x a second), rather than querying in this program. Minor change
         self.left_arm = rospy.Subscriber(rospy.resolve_name("~larm_input"), JointTrajectoryControllerState, self.larm_callback, queue_size=1)
         self.right_arm = rospy.Subscriber(rospy.resolve_name("~rarm_input"), JointTrajectoryControllerState, self.rarm_callback, queue_size=1)
 
@@ -50,6 +53,7 @@ class SelfCollisionCheck:
         while not rospy.is_shutdown():
             if self.check_trajectory:
                 # TODO: Wrap in try/except block
+                # TODO: Currently outputs a self-collision if it starts in self-collision and then moves out of it
 
                 # Find robot's current state
                 # current_arms = list(self.larm_state.actual.positions) += list(self.rarm_state.actual.positions)
