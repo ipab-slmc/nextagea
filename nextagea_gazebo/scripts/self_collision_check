@@ -10,15 +10,18 @@ import numpy as np
 from pyexotica.tools import check_whether_trajectory_is_collision_free_by_subsampling, get_colliding_links
 from trajectory_msgs.msg import JointTrajectoryPoint, JointTrajectory
 from sensor_msgs.msg import JointState
+from control_msgs.msg import JointTrajectoryControllerState
 
 class SelfCollisionCheck:
+    '''Self-collision checker for the Nextage platform. Node sits in front of trajectory controller and filters
+    out potentially harmful trajectories that may cause self-collisions'''
 
     def __init__(self):
         # Initial setup and sub/pub to nodes
         self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.callback, queue_size=1)
         self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
-        self.left_arm = rospy.Subscriber(rospy.resolve_name("~larm_input"), JointState, self.larm_callback, queue_size=1)
-        self.right_arm = rospy.Subscriber(rospy.resolve_name("~rarm_input"), JointState, self.rarm_callback, queue_size=1)
+        self.left_arm = rospy.Subscriber(rospy.resolve_name("~larm_input"), JointTrajectoryControllerState, self.larm_callback, queue_size=1)
+        self.right_arm = rospy.Subscriber(rospy.resolve_name("~rarm_input"), JointTrajectoryControllerState, self.rarm_callback, queue_size=1)
 
         # Get EXOTica problem
         self.problem = exo.Setup.load_problem('{nextagea_gazebo}/config/collision_setup.xml')
@@ -40,23 +43,25 @@ class SelfCollisionCheck:
     def spin(self):
         while not rospy.is_shutdown():
             if self.check_trajectory:
-                try:
-                    # Find robot's current state
-                    current_arm = self.larm_state.points[0].positions
-                    print(current_arm)
+                # TODO: Wrap in try/except block
 
-                    # Process JointTrajectory to be EXOTica solution form
-                    list_traj = []
-                    for i in range(0, len(self.trajectory_message.points)):
-                        list_traj.append(self.trajectory_message.points[i].positions)
-                    exotica_traj = np.array(list_traj)
-                    print(exotica_traj)
-                    
-                    print(check_whether_trajectory_is_collision_free_by_subsampling(self.problem.get_scene(), exotica_traj))
-                    print(get_colliding_links(self.problem.get_scene()))
-                    self.check_trajectory = False
-                except:
-                    print("ERROR")
+                # Find robot's current state
+                # current_arms = list(self.larm_state.actual.positions) += list(self.rarm_state.actual.positions)
+                current_arms = list(self.rarm_state.actual.positions)
+
+                # Process JointTrajectory to be EXOTica solution form
+                print("TESTING")
+                list_traj = [current_arms]
+
+                for i in range(0, len(self.trajectory_message.points)):
+                    list_traj.append(list(self.trajectory_message.points[i].positions))
+
+                exotica_traj = np.array([np.array(x) for x in list_traj])
+                print(exotica_traj)
+
+                print(check_whether_trajectory_is_collision_free_by_subsampling(self.problem.get_scene(), exotica_traj))
+                print(get_colliding_links(self.problem.get_scene()))
+                self.check_trajectory = False
 
             self.rate.sleep()
 
@@ -71,23 +76,3 @@ def main(args):
 
 if __name__ == '__main__':
     main(sys.argv)
-
-# Get EXOTica problem from setup
-#exo.Setup.init_ros()
-#problem = exo.Setup.load_problem('{nextagea_gazebo}/config/collision_setup.xml')
-
-#Plan poses
-#init = np.zeros(12)
-#desired = np.zeros(12)
-#desired[6] = 1.5
-
-#trajectory = np.array([init, desired])
-#print(trajectory)
-#print(check_whether_trajectory_is_collision_free_by_subsampling(problem.get_scene(), trajectory))
-#print(get_colliding_links(problem.get_scene()))
-
-
-#for i in range(0, len(goal_pose)):
-#    for t in range(0, len(goal_pose[i])):
-#        publish_pose(goal_pose[i][t], solver.get_problem())
-#        sleep(dt)

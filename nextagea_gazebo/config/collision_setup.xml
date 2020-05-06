@@ -5,7 +5,7 @@
 
     <PlanningScene>
       <Scene>
-        <JointGroup>botharms</JointGroup>
+        <JointGroup>right_arm</JointGroup>
         <URDF>{nextagea_description}/urdf/NextageAOpen.urdf</URDF>
         <SRDF>{nextagea_moveit_config}/config/NextageAOpen.srdf</SRDF>
         <CollisionScene>CollisionSceneFCLLatest</CollisionScene>
@@ -20,7 +20,7 @@
       <Task Task="Collision"/>
     </Equality>
 
-    <Goal>0 0 0 0 0 0 0 0 0 0 0 0</Goal>
+    <Goal>0 0 0 0 0 0</Goal>
   </SamplingProblem>
 
 </PlannerDemoConfig>
