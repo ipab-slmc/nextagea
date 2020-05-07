@@ -87,8 +87,10 @@ class SelfCollisionCheck:
 
 
 def main(args):
+    # Sets warning/error message behaviour
     global MODE 
     MODE = args[1]
+
     rospy.init_node('self_collision_check')
     col = SelfCollisionCheck()
     try:

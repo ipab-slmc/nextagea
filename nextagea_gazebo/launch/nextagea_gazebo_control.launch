@@ -6,9 +6,15 @@
   <node name="controller_spawner" pkg="controller_manager"
         type="spawner" respawn="false"
         output="screen" args="joint_state_controller
-                              larm_controller
-                              rarm_controller
+                              botharm_controller
                               head_controller
                               torso_controller"/>
-  <node name="go_home" pkg="nextagea_gazebo"  type="go_home" />
+
+  <!-- load the stopped controllers -->
+  <node name="stopped_controller_spawner" pkg="controller_manager"
+        type="spawner" respawn="false"
+        output="screen" args="--stopped larm_controller
+                                        rarm_controller"/>
+
+  <!-- <node name="go_home" pkg="nextagea_gazebo"  type="go_home" /> -->
 </launch>
