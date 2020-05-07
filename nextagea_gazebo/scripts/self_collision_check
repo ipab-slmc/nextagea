@@ -71,9 +71,15 @@ class SelfCollisionCheck:
                     # Pass through trajectory
                     self.output_traj.publish(self.trajectory_message)
                 else:
-                    print(colours.WARNING + "[ WARN ] Self-collision detected on following links")
-                    get_colliding_links(self.problem.get_scene())
-                    print(colours.ENDC)
+                    if MODE == '-warn':
+                        print(colours.WARNING + "[WARN] Self-collision detected on following links:")
+                        get_colliding_links(self.problem.get_scene())
+                        print(colours.ENDC)
+                        self.output_traj.publish(self.trajectory_message)
+                    elif MODE == '-error':
+                        print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
+                        get_colliding_links(self.problem.get_scene())
+                        print(colours.ENDC)                        
                 
                 self.check_trajectory = False
 
@@ -81,6 +87,8 @@ class SelfCollisionCheck:
 
 
 def main(args):
+    global MODE 
+    MODE = args[1]
     rospy.init_node('self_collision_check')
     col = SelfCollisionCheck()
     try:

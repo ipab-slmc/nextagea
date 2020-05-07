@@ -37,9 +37,9 @@
   <arg     if="$(arg debug)" name="script_type" value="debug"/>
 
   <!-- start self-collision checker -->
-  <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen">
-    <remap from="~traj_input" to="/rarm_controller/command" />
-    <remap from="~traj_output" to="/self_collision_check/output" />
+  <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="-warn">
+    <remap from="~traj_input" to="/collision_rarm_controller/command" />
+    <remap from="~traj_output" to="/rarm_controller/command" />
     <remap from="~larm_input" to="/larm_controller/state" />
     <remap from="~rarm_input" to="/rarm_controller/state" />
   </node>
