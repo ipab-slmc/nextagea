@@ -11,6 +11,7 @@
                               torso_controller"/>
 
   <!-- load the stopped controllers -->
+  <!-- please run the controller switch script in nextagea_gazebo/scripts to switch to rarm/larm from both arm controller-->
   <node name="stopped_controller_spawner" pkg="controller_manager"
         type="spawner" respawn="false"
         output="screen" args="--stopped larm_controller

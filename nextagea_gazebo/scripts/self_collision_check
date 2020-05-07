@@ -54,38 +54,43 @@ class SelfCollisionCheck:
 
     def spin(self):
         while not rospy.is_shutdown():
-            if self.check_trajectory:
-                # TODO: Wrap in try/except block
-                # TODO: Currently outputs a self-collision if it starts in self-collision and then moves out of it, is this desired behaviour?
+            try:
+                if self.check_trajectory:
+                    # TODO: Currently outputs a self-collision if it starts in self-collision and then moves out of it, is this desired behaviour?
 
-                # Find robot's current state
-                current_arms = list(self.arm_state.actual.positions)
-                print(current_arms)
+                    # Find robot's current state
+                    current_arms = list(self.arm_state.actual.positions)
 
-                # Strip JointTrajectory down to be in EXOTica solution form
-                list_traj = [current_arms]
-                for i in range(0, len(self.trajectory_message.points)):
-                    list_traj.append(list(self.trajectory_message.points[i].positions))
-                exotica_traj = np.array([np.array(x) for x in list_traj])
+                    # Strip JointTrajectory down to be in EXOTica solution form
+                    list_traj = [current_arms]
+                    for i in range(0, len(self.trajectory_message.points)):
+                        list_traj.append(list(self.trajectory_message.points[i].positions))
+                    exotica_traj = np.array([np.array(x) for x in list_traj])
 
-                traj_check = check_whether_trajectory_is_collision_free_by_subsampling(self.problem.get_scene(), exotica_traj)
+                    traj_check = check_whether_trajectory_is_collision_free_by_subsampling(self.problem.get_scene(), exotica_traj)
 
-                if traj_check:
-                    # Pass through trajectory
-                    self.output_traj.publish(self.trajectory_message)
-                else:
-                    if self.mode == '-warn':
-                        # Print warning, but also pass through trajectory
-                        print(colours.WARNING + "[WARN] Self-collision detected on following links:")
-                        get_colliding_links(self.problem.get_scene())
-                        print(colours.ENDC)
+                    if traj_check:
+                        # Pass through trajectory
                         self.output_traj.publish(self.trajectory_message)
-                    elif self.mode == '-error':
-                        # Print error, don't pass through trajectory
-                        print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
-                        get_colliding_links(self.problem.get_scene())
-                        print(colours.ENDC)                        
-                
+                    else:
+                        if self.mode == '-warn':
+                            # Print warning, but also pass through trajectory
+                            print(colours.WARNING + "[WARN] Self-collision detected on following links:")
+                            get_colliding_links(self.problem.get_scene())
+                            print(colours.ENDC)
+                            self.output_traj.publish(self.trajectory_message)
+                        elif self.mode == '-error':
+                            # Print error, don't pass through trajectory
+                            print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
+                            get_colliding_links(self.problem.get_scene())
+                            print(colours.ENDC)                        
+                    
+                    self.check_trajectory = False
+
+            except Exception as e:
+                print(colours.FAIL + "[ERROR] Self-collision check failed due to:")
+                print(e)
+                print(colours.ENDC)
                 self.check_trajectory = False
 
             self.rate.sleep()
