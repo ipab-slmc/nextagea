@@ -16,5 +16,5 @@
         output="screen" args="--stopped larm_controller
                                         rarm_controller"/>
 
-  <!-- <node name="go_home" pkg="nextagea_gazebo"  type="go_home" /> -->
+  <node name="go_home" pkg="nextagea_gazebo"  type="go_home" />
 </launch>

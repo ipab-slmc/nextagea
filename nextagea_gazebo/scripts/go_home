@@ -10,31 +10,25 @@ import sys
 class Arms:
 
     def __init__(self, joint):
-        self.rpub = rospy.Publisher("/rarm_controller/command", JointTrajectory, queue_size=1)
-        self.rnames = [u'RARM_JOINT0', u'RARM_JOINT1', u'RARM_JOINT2', u'RARM_JOINT3', u'RARM_JOINT4', u'RARM_JOINT5']
-        self.lpub = rospy.Publisher("/larm_controller/command", JointTrajectory, queue_size=1)
-        self.lnames = [u'LARM_JOINT0', u'LARM_JOINT1', u'LARM_JOINT2', u'LARM_JOINT3', u'LARM_JOINT4', u'LARM_JOINT5']
+        self.pub = rospy.Publisher("/botharm_controller/command", JointTrajectory, queue_size=1)
+        self.names = [u'LARM_JOINT0', u'LARM_JOINT1', u'LARM_JOINT2', u'LARM_JOINT3', u'LARM_JOINT4', u'LARM_JOINT5', u'RARM_JOINT0', u'RARM_JOINT1', u'RARM_JOINT2', u'RARM_JOINT3', u'RARM_JOINT4', u'RARM_JOINT5']
 
     def go_init(self):
         print("Nextage going to init pos")
-        initpos = np.zeros(6)
+        initpos = np.zeros(12)
         timing = 3.0
 
         trajectory_message = JointTrajectory()
         point = JointTrajectoryPoint()
-        point.velocities = np.zeros(6).tolist()
+        point.velocities = np.zeros(12).tolist()
         point.positions = initpos.tolist()
         point.time_from_start = rospy.Duration(timing)
         trajectory_message.points.append(point)
 
-        trajectory_message.joint_names = [x.encode('ascii') for x in self.rnames]
+        trajectory_message.joint_names = [x.encode('ascii') for x in self.names]
         trajectory_message.header.stamp = rospy.Time.now()
         time.sleep(5)
-        self.rpub.publish(trajectory_message)
-
-        trajectory_message.joint_names = [x.encode('ascii') for x in self.lnames]
-        trajectory_message.header.stamp = rospy.Time.now()
-        self.lpub.publish(trajectory_message)
+        self.pub.publish(trajectory_message)
 
 def main(args):
     rospy.init_node("go_init")

@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Self-collision checker for Nextage platform
 
 import pyexotica as exo
 from pyexotica.publish_trajectory import *
@@ -19,45 +20,47 @@ class colours:
     ENDC = '\033[0m'
 
 class SelfCollisionCheck:
-    '''Self-collision checker for the Nextage platform. Node sits in front of trajectory controller and filters
+    '''Self-collision checker for the Nextage platform. Node sits in front of trajectory controllers and filters
     out potentially harmful trajectories that may cause self-collisions'''
 
-    def __init__(self):
+    def __init__(self, MODE, CONTROLLER_TYPE):
         # Initial setup and sub/pub to nodes
-        self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.callback, queue_size=1)
+        self.controller_type = CONTROLLER_TYPE
+        self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.input_callback, queue_size=1)
         self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
+        self.arm_info = rospy.Subscriber(rospy.resolve_name("~arm_input"), JointTrajectoryControllerState, self.arm_callback, queue_size=1)
 
-        # TODO: Perhaps this would be better setup as a ROS service that keeps a track of the current robot state
-        # at a set rate (say 2x a second), rather than querying in this program. Minor change
-        self.left_arm = rospy.Subscriber(rospy.resolve_name("~larm_input"), JointTrajectoryControllerState, self.larm_callback, queue_size=1)
-        self.right_arm = rospy.Subscriber(rospy.resolve_name("~rarm_input"), JointTrajectoryControllerState, self.rarm_callback, queue_size=1)
-
-        # Get EXOTica problem
-        self.problem = exo.Setup.load_problem('{nextagea_gazebo}/config/collision_setup.xml')
-
+        # Get EXOTica problem, different controllers correspond to different problem setups with different JointGroup
+        if self.controller_type == "botharm":
+            self.problem = exo.Setup.load_problem('{nextagea_gazebo}/config/botharms_collision_setup.xml')
+        elif self.controller_type == "rarm":
+            self.problem = exo.Setup.load_problem('{nextagea_gazebo}/config/rarm_collision_setup.xml')
+        elif self.controller_type == "larm":
+            self.problem = exo.Setup.load_problem('{nextagea_gazebo}/config/larm_collision_setup.xml')
+        else:
+            raise ValueError("Unrecognised trajectory input: %s" % self.controller_type)
+        
+        self.mode = MODE
         self.check_trajectory = False
         self.rate = rospy.Rate(10)
 
-    def callback(self, data):
-        # Process JointTrajectory to be EXOTica solution form
+    def input_callback(self, data):
         self.check_trajectory = True
         self.trajectory_message = data
     
-    def larm_callback(self, data):
-        self.larm_state = data
-
-    def rarm_callback(self, data):
-        self.rarm_state = data
+    def arm_callback(self, data):
+        # Get current joint states
+        self.arm_state = data
 
     def spin(self):
         while not rospy.is_shutdown():
             if self.check_trajectory:
                 # TODO: Wrap in try/except block
-                # TODO: Currently outputs a self-collision if it starts in self-collision and then moves out of it
+                # TODO: Currently outputs a self-collision if it starts in self-collision and then moves out of it, is this desired behaviour?
 
                 # Find robot's current state
-                # current_arms = list(self.larm_state.actual.positions) += list(self.rarm_state.actual.positions)
-                current_arms = list(self.rarm_state.actual.positions)
+                current_arms = list(self.arm_state.actual.positions)
+                print(current_arms)
 
                 # Strip JointTrajectory down to be in EXOTica solution form
                 list_traj = [current_arms]
@@ -71,12 +74,14 @@ class SelfCollisionCheck:
                     # Pass through trajectory
                     self.output_traj.publish(self.trajectory_message)
                 else:
-                    if MODE == '-warn':
+                    if self.mode == '-warn':
+                        # Print warning, but also pass through trajectory
                         print(colours.WARNING + "[WARN] Self-collision detected on following links:")
                         get_colliding_links(self.problem.get_scene())
                         print(colours.ENDC)
                         self.output_traj.publish(self.trajectory_message)
-                    elif MODE == '-error':
+                    elif self.mode == '-error':
+                        # Print error, don't pass through trajectory
                         print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
                         get_colliding_links(self.problem.get_scene())
                         print(colours.ENDC)                        
@@ -87,12 +92,12 @@ class SelfCollisionCheck:
 
 
 def main(args):
-    # Sets warning/error message behaviour
-    global MODE 
+    # Sets warning/error message behaviour & controller type
     MODE = args[1]
+    CONTROLLER_TYPE = args[2]
 
     rospy.init_node('self_collision_check')
-    col = SelfCollisionCheck()
+    col = SelfCollisionCheck(MODE, CONTROLLER_TYPE)
     try:
         col.spin()
     except KeyboardInterrupt:
