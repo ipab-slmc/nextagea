@@ -5,13 +5,11 @@ import pyexotica as exo
 from pyexotica.publish_trajectory import *
 import signal
 import sys
-import warnings
 import rospy
 from time import sleep
 import numpy as np
 from pyexotica.tools import check_whether_trajectory_is_collision_free_by_subsampling, get_colliding_links
-from trajectory_msgs.msg import JointTrajectoryPoint, JointTrajectory
-from sensor_msgs.msg import JointState
+from trajectory_msgs.msg import JointTrajectory
 from control_msgs.msg import JointTrajectoryControllerState
 
 class colours:
@@ -30,15 +28,14 @@ class SelfCollisionCheck:
         self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
         self.arm_info = rospy.Subscriber(rospy.resolve_name("~arm_input"), JointTrajectoryControllerState, self.arm_callback, queue_size=1)
 
-        # Get EXOTica problem, different controllers correspond to different problem setups with different JointGroup
-        if self.controller_type == "botharm":
-            self.problem = exo.Setup.load_problem('{nextagea_gazebo}/config/botharms_collision_setup.xml')
-        elif self.controller_type == "rarm":
-            self.problem = exo.Setup.load_problem('{nextagea_gazebo}/config/rarm_collision_setup.xml')
-        elif self.controller_type == "larm":
-            self.problem = exo.Setup.load_problem('{nextagea_gazebo}/config/larm_collision_setup.xml')
-        else:
-            raise ValueError("Unrecognised trajectory input: %s" % self.controller_type)
+        # Setup EXOTica scene with corresponding JointGroup
+        init = exo.Initializers.SceneInitializer()
+        init[1]['JointGroup'] = str(self.controller_type)
+        init[1]['URDF'] = '{nextagea_description}/urdf/NextageAOpen.urdf'
+        init[1]['SRDF'] = '{nextagea_moveit_config}/config/NextageAOpen.srdf'
+        init[1]['AlwaysUpdateCollisionScene'] = True
+        init[1]['CollisionScene'] = 'CollisionSceneFCLLatest'
+        self.scene = exo.Setup.create_scene(init)
         
         self.mode = MODE
         self.check_trajectory = False
@@ -76,13 +73,13 @@ class SelfCollisionCheck:
                         if self.mode == '-warn':
                             # Print warning, but also pass through trajectory
                             print(colours.WARNING + "[WARN] Self-collision detected on following links:")
-                            get_colliding_links(self.problem.get_scene())
+                            get_colliding_links(self.scene)
                             print(colours.ENDC)
                             self.output_traj.publish(self.trajectory_message)
                         elif self.mode == '-error':
                             # Print error, don't pass through trajectory
                             print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
-                            get_colliding_links(self.problem.get_scene())
+                            get_colliding_links(self.scene)
                             print(colours.ENDC)                        
                     
                     self.check_trajectory = False
@@ -99,6 +96,7 @@ class SelfCollisionCheck:
 def main(args):
     # Sets warning/error message behaviour & controller type
     MODE = args[1]
+    # Check CONTROLLER_TYPE is one of the supported: botharms, rarm, larm
     CONTROLLER_TYPE = args[2]
 
     rospy.init_node('self_collision_check')
