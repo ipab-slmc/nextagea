@@ -10,7 +10,7 @@ import sys
 class Arms:
 
     def __init__(self, joint):
-        self.pub = rospy.Publisher("/botharm_controller/command", JointTrajectory, queue_size=1)
+        self.pub = rospy.Publisher("/botharms_controller/command", JointTrajectory, queue_size=1)
         self.names = [u'LARM_JOINT0', u'LARM_JOINT1', u'LARM_JOINT2', u'LARM_JOINT3', u'LARM_JOINT4', u'LARM_JOINT5', u'RARM_JOINT0', u'RARM_JOINT1', u'RARM_JOINT2', u'RARM_JOINT3', u'RARM_JOINT4', u'RARM_JOINT5']
 
     def go_init(self):

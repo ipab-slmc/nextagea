@@ -6,7 +6,7 @@
   <node name="controller_spawner" pkg="controller_manager"
         type="spawner" respawn="false"
         output="screen" args="joint_state_controller
-                              botharm_controller
+                              botharms_controller
                               head_controller
                               torso_controller"/>
 

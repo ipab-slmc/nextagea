@@ -156,7 +156,7 @@ rarm_controller:
   stop_trajectory_duration: 0        # Override default
 
 # Trajectory Controllers ---------------------------------------
-botharm_controller:
+botharms_controller:
   type: effort_controllers/JointTrajectoryController
   joints:
     - LARM_JOINT0
