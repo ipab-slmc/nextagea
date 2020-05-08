@@ -30,10 +30,7 @@ class Arms:
         time.sleep(5)
         self.pub.publish(trajectory_message)
 
-def main(args):
-    rospy.init_node("go_init")
-    robot = Arms(args)
-    robot.go_init()
-
 if __name__ == '__main__':
-    main(sys.argv)
+    rospy.init_node("go_init")
+    robot = Arms(sys.argv)
+    robot.go_init()
