@@ -6,7 +6,6 @@ from pyexotica.publish_trajectory import *
 import signal
 import sys
 import rospy
-from time import sleep
 import numpy as np
 from pyexotica.tools import check_whether_trajectory_is_collision_free_by_subsampling, get_colliding_links
 from trajectory_msgs.msg import JointTrajectory
@@ -96,10 +95,28 @@ class SelfCollisionCheck:
 
 
 def main(args):
-    # Sets warning/error message behaviour & controller type
-    MODE = args[1]
-    # Check CONTROLLER_TYPE is one of the supported: botharms, rarm, larm
-    CONTROLLER_TYPE = args[2]
+    import argparse
+
+    valid_mode = ["warn", "error"]
+    valid_type = ["botharms", "rarm", "larm"]
+
+    parser = argparse.ArgumentParser(description="Nextage self-collision checker")
+    parser.add_argument("--mode", "-m", type=str, nargs="?", default="warn")
+    parser.add_argument("--type", "-t", type=str, nargs="?", default="botharms")
+    parser.add_argument("--remaps", type=str, nargs="?")
+    parser.add_argument('args', nargs=argparse.REMAINDER) # Needed to allow remap args
+    results = parser.parse_args()
+    if results.mode not in valid_mode:
+        print("Invalid collision mode! Use only the following: " + str(valid_mode))
+        parser.print_usage()
+        exit(1)
+    if results.type not in valid_type:
+        print("Invalid controller type! Use only the following: " + str(valid_type))
+        parser.print_usage()
+        exit(1)
+
+    MODE = results.mode
+    CONTROLLER_TYPE = results.type
 
     rospy.init_node('self_collision_check')
     col = SelfCollisionCheck(MODE, CONTROLLER_TYPE)
