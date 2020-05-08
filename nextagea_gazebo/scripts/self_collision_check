@@ -106,7 +106,7 @@ def main(args):
     valid_type = ["botharms", "rarm", "larm"]
 
     MODE = rospy.get_param("/self_collision_check/collision_mode")
-    CONTROLLER_TYPE = rospy.get_param("self_collision_check/controller_type")
+    CONTROLLER_TYPE = rospy.get_param("/self_collision_check/controller_type")
     if MODE not in valid_mode:
         print("Detected self_collision_check mode: " + MODE)
         print("Invalid collision mode! Use only the following: " + str(valid_mode))
