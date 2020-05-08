@@ -44,9 +44,9 @@
   <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="">
     <param name="controller_type" value="$(arg controller_type)"/>
     <param name="collision_mode" value="$(arg collision_mode)"/>
-    <remap from="~traj_input" to="/collision_botharms_controller/command" />
-    <remap from="~traj_output" to="/botharms_controller/command" />
-    <remap from="~arm_input" to="/botharms_controller/state" />
+    <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
+    <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
+    <remap from="~arm_input" to="/$(arg controller_type)_controller/state" />
   </node>
 
   <!-- start gazebo server-->

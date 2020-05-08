@@ -24,7 +24,7 @@ class SelfCollisionCheck:
         # Initial setup and sub/pub to nodes
         self.controller_type = CONTROLLER_TYPE
         self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.input_callback, queue_size=1)
-        self.output_traj = rospy.Publisher(rospy.resolve_name("~output_input"), JointTrajectory, queue_size=1)
+        self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
         self.arm_info = rospy.Subscriber(rospy.resolve_name("~arm_input"), JointTrajectoryControllerState, self.arm_callback, queue_size=1)
 
         # Setup EXOTica scene with corresponding JointGroup
@@ -65,23 +65,23 @@ class SelfCollisionCheck:
                         list_traj.append(list(self.trajectory_message.points[i].positions))
                     exotica_traj = np.array([np.array(x) for x in list_traj])
 
-                    traj_check = check_whether_trajectory_is_collision_free_by_subsampling(self.problem.get_scene(), exotica_traj)
+                    traj_check = check_whether_trajectory_is_collision_free_by_subsampling(self.scene, exotica_traj)
 
                     if traj_check:
                         # Pass through trajectory
                         self.output_traj.publish(self.trajectory_message)
                     else:
-                        if self.mode == '-warn':
+                        if self.mode == 'warn':
                             # Print warning, but also pass through trajectory
                             print(colours.WARNING + "[WARN] Self-collision detected on following links:")
                             get_colliding_links(self.scene)
                             print(colours.ENDC)
                             self.output_traj.publish(self.trajectory_message)
-                        elif self.mode == '-error':
+                        elif self.mode == 'error':
                             # Print error, don't pass through trajectory
                             print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
                             get_colliding_links(self.scene)
-                            print(colours.ENDC)                        
+                            print(colours.ENDC)
                     
                     self.check_trajectory = False
 
@@ -96,6 +96,7 @@ class SelfCollisionCheck:
 
 def main(args):
 
+    # Get controller_type and mode parameters
     valid_mode = ["warn", "error"]
     valid_type = ["botharms", "rarm", "larm"]
 
