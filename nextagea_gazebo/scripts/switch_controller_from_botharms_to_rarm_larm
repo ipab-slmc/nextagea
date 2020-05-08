@@ -13,7 +13,7 @@ try:
 
     # Enforce a strict change between controllers
     ret = switch_controller(['larm_controller', 'rarm_controller'], 
-                            ['botharm_controller'], 2, True, 0)
+                            ['botharms_controller'], 2, True, 0)
 
 except rospy.ServiceException as e:
     print("Controller switch failed: %s" %e)
