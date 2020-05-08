@@ -37,12 +37,12 @@
   <arg     if="$(arg debug)" name="script_type" value="debug"/>
 
   <!-- start self-collision checker -->
-  <!-- use controller_type to identify whether using botharm/rarm/larm controller. Change remaps match-->
+  <!-- use controller_type to identify whether using botharms/rarm/larm controller. Changes remaps to match-->
   <arg name="controller_type" value="botharms"/>
   <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="-warn $(arg controller_type)">
-    <remap from="~traj_input" to="/collision_botharm_controller/command" />
-    <remap from="~traj_output" to="/botharm_controller/command" />
-    <remap from="~arm_input" to="/botharm_controller/state" />
+    <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
+    <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
+    <remap from="~arm_input" to="/$(arg controller_type)_controller/state" />
   </node>
 
   <!-- start gazebo server-->
