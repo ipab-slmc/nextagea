@@ -26,6 +26,7 @@ class SelfCollisionCheck:
         self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.input_callback, queue_size=1)
         self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
         self.arm_info = rospy.Subscriber(rospy.resolve_name("~arm_input"), JointTrajectoryControllerState, self.arm_callback, queue_size=1)
+        self.names = ['LARM_JOINT0', 'LARM_JOINT1', 'LARM_JOINT2', 'LARM_JOINT3', 'LARM_JOINT4', 'LARM_JOINT5', 'RARM_JOINT0', 'RARM_JOINT1', 'RARM_JOINT2', 'RARM_JOINT3', 'RARM_JOINT4', 'RARM_JOINT5']
 
         # Setup EXOTica scene with corresponding JointGroup
         init = exo.Initializers.SceneInitializer()
@@ -58,6 +59,10 @@ class SelfCollisionCheck:
 
                     # Find robot's current state
                     current_arms = list(self.arm_state.actual.positions)
+
+                    # Update model with current joint positions
+                    joint_dict = {name : current_arms[i] for i, name in enumerate(self.names)}
+                    self.scene.set_model_state_map(joint_dict)
 
                     # Strip JointTrajectory down to be in EXOTica solution form
                     list_traj = [current_arms]
