@@ -42,8 +42,10 @@ class SelfCollisionCheck:
         self.rate = rospy.Rate(10)
 
     def input_callback(self, data):
-        self.check_trajectory = True
-        self.trajectory_message = data
+        # If a trajectory is not currently being processed, get data and check
+        if self.check_trajectory == False:
+            self.check_trajectory = True
+            self.trajectory_message = data
     
     def arm_callback(self, data):
         # Get current joint states
