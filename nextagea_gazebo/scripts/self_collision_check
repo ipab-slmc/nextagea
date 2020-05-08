@@ -24,7 +24,7 @@ class SelfCollisionCheck:
         # Initial setup and sub/pub to nodes
         self.controller_type = CONTROLLER_TYPE
         self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.input_callback, queue_size=1)
-        self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
+        self.output_traj = rospy.Publisher(rospy.resolve_name("~output_input"), JointTrajectory, queue_size=1)
         self.arm_info = rospy.Subscriber(rospy.resolve_name("~arm_input"), JointTrajectoryControllerState, self.arm_callback, queue_size=1)
 
         # Setup EXOTica scene with corresponding JointGroup
@@ -95,28 +95,20 @@ class SelfCollisionCheck:
 
 
 def main(args):
-    import argparse
 
     valid_mode = ["warn", "error"]
     valid_type = ["botharms", "rarm", "larm"]
 
-    parser = argparse.ArgumentParser(description="Nextage self-collision checker")
-    parser.add_argument("--mode", "-m", type=str, nargs="?", default="warn")
-    parser.add_argument("--type", "-t", type=str, nargs="?", default="botharms")
-    parser.add_argument("--remaps", type=str, nargs="?")
-    parser.add_argument('args', nargs=argparse.REMAINDER) # Needed to allow remap args
-    results = parser.parse_args()
-    if results.mode not in valid_mode:
+    MODE = rospy.get_param("/self_collision_check/collision_mode")
+    CONTROLLER_TYPE = rospy.get_param("self_collision_check/controller_type")
+    if MODE not in valid_mode:
+        print("Detected self_collision_check mode: " + MODE)
         print("Invalid collision mode! Use only the following: " + str(valid_mode))
-        parser.print_usage()
         exit(1)
-    if results.type not in valid_type:
+    if CONTROLLER_TYPE not in valid_type:
+        print("Detected self_collision_check controller type: " + CONTROLLER_TYPE)
         print("Invalid controller type! Use only the following: " + str(valid_type))
-        parser.print_usage()
-        exit(1)
-
-    MODE = results.mode
-    CONTROLLER_TYPE = results.type
+        exit(1)  
 
     rospy.init_node('self_collision_check')
     col = SelfCollisionCheck(MODE, CONTROLLER_TYPE)
