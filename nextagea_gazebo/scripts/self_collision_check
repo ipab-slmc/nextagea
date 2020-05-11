@@ -50,50 +50,73 @@ class SelfCollisionCheck:
     def arm_callback(self, data):
         # Get current joint states
         self.arm_state = data
+    
+    def check_velocities_accelerations(self, trajectory_message):
+        points = trajectory_message.points
+        pos = []
+        dt = []
+        for p in points:
+            dt.append(p.time_from_start.to_sec())
+            pos.append(p.positions)
+        pos = np.array([np.array(x) for x in pos])
+        dt = np.array(dt)
+        velo = np.gradient(pos, dt, axis=0)
+        
+        accel = np.gradient(velo, dt, axis=0)
+
+        #print(self.scene.get_kinematic_tree().get_joint_limits())
+        velocity_limit = 1.0
+
+        print(velo)
+        result = velo < velocity_limit
+        print(result)
+
 
     def spin(self):
         while not rospy.is_shutdown():
-            try:
-                if self.check_trajectory:
+#            try:
+            if self.check_trajectory:
 
-                    # Find robot's current state
-                    current_arms = list(self.arm_state.actual.positions)
+                # Find robot's current state
+                current_arms = list(self.arm_state.actual.positions)
 
-                    # Update model with current joint positions
-                    joint_dict = {name : current_arms[i] for i, name in enumerate(self.names)}
-                    self.scene.set_model_state_map(joint_dict)
+                # Update model with current joint positions
+                joint_dict = {name : current_arms[i] for i, name in enumerate(self.names)}
+                self.scene.set_model_state_map(joint_dict)
 
-                    # Strip JointTrajectory down to be in EXOTica solution form
-                    list_traj = [current_arms]
-                    for i in range(0, len(self.trajectory_message.points)):
-                        list_traj.append(list(self.trajectory_message.points[i].positions))
-                    exotica_traj = np.array([np.array(x) for x in list_traj])
+                # Strip JointTrajectory down to be in EXOTica solution form
+                list_traj = [current_arms]
+                for i in range(0, len(self.trajectory_message.points)):
+                    list_traj.append(list(self.trajectory_message.points[i].positions))
+                exotica_traj = np.array([np.array(x) for x in list_traj])
 
-                    traj_check = check_whether_trajectory_is_collision_free_by_subsampling(self.scene, exotica_traj)
+                traj_check = check_whether_trajectory_is_collision_free_by_subsampling(self.scene, exotica_traj)
 
-                    if traj_check:
-                        # Pass through trajectory
+                self.check_velocities_accelerations(self.trajectory_message)
+
+                if traj_check:
+                    # Pass through trajectory
+                    self.output_traj.publish(self.trajectory_message)
+                else:
+                    if self.mode == 'warn':
+                        # Print warning, but also pass through trajectory
+                        print(colours.WARNING + "[WARN] Self-collision detected on following links:")
+                        get_colliding_links(self.scene)
+                        print(colours.ENDC)
                         self.output_traj.publish(self.trajectory_message)
-                    else:
-                        if self.mode == 'warn':
-                            # Print warning, but also pass through trajectory
-                            print(colours.WARNING + "[WARN] Self-collision detected on following links:")
-                            get_colliding_links(self.scene)
-                            print(colours.ENDC)
-                            self.output_traj.publish(self.trajectory_message)
-                        elif self.mode == 'error':
-                            # Print error, don't pass through trajectory
-                            print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
-                            get_colliding_links(self.scene)
-                            print(colours.ENDC)
-                    
-                    self.check_trajectory = False
-
-            except Exception as e:
-                print(colours.FAIL + "[ERROR] Self-collision check failed due to:")
-                print(e)
-                print(colours.ENDC)
+                    elif self.mode == 'error':
+                        # Print error, don't pass through trajectory
+                        print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
+                        get_colliding_links(self.scene)
+                        print(colours.ENDC)
+                
                 self.check_trajectory = False
+
+#            except Exception as e:
+#                print(colours.FAIL + "[ERROR] Self-collision check failed due to:")
+#                print(e)
+#                print(colours.ENDC)
+#                self.check_trajectory = False
 
             self.rate.sleep()
 
