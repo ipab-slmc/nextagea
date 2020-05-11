@@ -55,7 +55,6 @@ class SelfCollisionCheck:
         while not rospy.is_shutdown():
             try:
                 if self.check_trajectory:
-                    # TODO: Currently outputs a self-collision if it starts in self-collision and then moves out of it, is this desired behaviour?
 
                     # Find robot's current state
                     current_arms = list(self.arm_state.actual.positions)

@@ -40,7 +40,7 @@
   <!-- use controller_type to identify whether using botharms/rarm/larm controller-->
   <arg name="controller_type" value="botharms"/>
   <!-- use collision_mode to select error/warn behaviour-->
-  <arg name="collision_mode" value="warn"/>
+  <arg name="collision_mode" value="error"/>
   <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="">
     <param name="controller_type" value="$(arg controller_type)"/>
     <param name="collision_mode" value="$(arg collision_mode)"/>
