@@ -53,44 +53,48 @@ class SelfCollisionCheck:
     
     def check_velocities_accelerations(self, trajectory_message):
         points = trajectory_message.points
-        pos = []
-        dt = []
+
+        # Get starting position
+        pos = [list(self.arm_state.actual.positions)]
+        dt = [0]
+
         for p in points:
             dt.append(p.time_from_start.to_sec())
             pos.append(p.positions)
-        pos = np.array([np.array(x) for x in pos])
-        dt = np.array(dt)
-        velo = np.gradient(pos, dt, axis=0)
-        
-        accel = np.gradient(velo, dt, axis=0)
 
-        #print(self.scene.get_kinematic_tree().get_joint_limits())
+        # Calculate velocities and accelerations, add 0 row to start for t=0
+        velocities = np.true_divide(np.diff(pos, axis=0), np.diff(dt)[:,None])
+        velocities = np.vstack((np.zeros(np.size(velocities, 1)), velocities))
+        accelerations = np.true_divide(np.diff(velocities, axis=0), np.diff(dt)[:,None])
+        accelerations = np.vstack((np.zeros(np.size(accelerations, 1)), accelerations))
+
         velocity_limit = 1.0
 
-        print(velo)
-        result = velo < velocity_limit
+        result = (velocities < velocity_limit) & (velocities > -velocity_limit)
         print(result)
 
+    def check_trajectory_collisions(self, scene, arm_state, joint_names, trajectory_message):
+        # Find robot's current state
+        current_arms = list(arm_state.actual.positions)
+
+        # Update model with current joint positions
+        joint_dict = {name : current_arms[i] for i, name in enumerate(joint_names)}
+        scene.set_model_state_map(joint_dict)
+
+        # Strip JointTrajectory down to be in EXOTica solution form
+        list_traj = [current_arms]
+        for i in range(0, len(trajectory_message.points)):
+            list_traj.append(list(trajectory_message.points[i].positions))
+        exotica_traj = np.array([np.array(x) for x in list_traj])
+
+        return check_whether_trajectory_is_collision_free_by_subsampling(scene, exotica_traj)
 
     def spin(self):
         while not rospy.is_shutdown():
 #            try:
             if self.check_trajectory:
 
-                # Find robot's current state
-                current_arms = list(self.arm_state.actual.positions)
-
-                # Update model with current joint positions
-                joint_dict = {name : current_arms[i] for i, name in enumerate(self.names)}
-                self.scene.set_model_state_map(joint_dict)
-
-                # Strip JointTrajectory down to be in EXOTica solution form
-                list_traj = [current_arms]
-                for i in range(0, len(self.trajectory_message.points)):
-                    list_traj.append(list(self.trajectory_message.points[i].positions))
-                exotica_traj = np.array([np.array(x) for x in list_traj])
-
-                traj_check = check_whether_trajectory_is_collision_free_by_subsampling(self.scene, exotica_traj)
+                traj_check = self.check_trajectory_collisions(self.scene, self.arm_state, self.names, self.trajectory_message)
 
                 self.check_velocities_accelerations(self.trajectory_message)
 
