@@ -41,9 +41,13 @@
   <arg name="controller_type" value="botharms"/>
   <!-- use collision_mode to select error/warn behaviour-->
   <arg name="collision_mode" value="error"/>
+  <!-- use check_param to select what you want to check: self-collision + velocities + acceleration (cva), just self-collision (c), just velocity (v), just acceleration (a)-->
+  <arg name="check_param" value="cva"/>
+
   <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="">
     <param name="controller_type" value="$(arg controller_type)"/>
     <param name="collision_mode" value="$(arg collision_mode)"/>
+    <param name="check_param" value="$(arg check_param)"/>
     <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
     <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
     <remap from="~arm_input" to="/$(arg controller_type)_controller/state" />
