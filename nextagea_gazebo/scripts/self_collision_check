@@ -10,6 +10,8 @@ import numpy as np
 from pyexotica.tools import check_whether_trajectory_is_collision_free_by_subsampling, get_colliding_links
 from trajectory_msgs.msg import JointTrajectory
 from control_msgs.msg import JointTrajectoryControllerState
+from xml.dom.minidom import parse
+from rospkg import RosPack
 
 class colours:
     WARNING = '\033[93m'
@@ -27,15 +29,6 @@ class SelfCollisionCheck:
         self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.input_callback, queue_size=1)
         self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
         self.arm_info = rospy.Subscriber(rospy.resolve_name("~arm_input"), JointTrajectoryControllerState, self.arm_callback, queue_size=1)
-        if rospy.resolve_name("~traj_input") == "/collision_botharms_controller/command":
-            self.names = ['LARM_JOINT0', 'LARM_JOINT1', 'LARM_JOINT2', 'LARM_JOINT3', 'LARM_JOINT4', 'LARM_JOINT5', 'RARM_JOINT0', 'RARM_JOINT1', 'RARM_JOINT2', 'RARM_JOINT3', 'RARM_JOINT4', 'RARM_JOINT5']
-        elif rospy.resolve_name("~traj_input") == "/collision_rarm_controller/command":
-            self.names = ['RARM_JOINT0', 'RARM_JOINT1', 'RARM_JOINT2', 'RARM_JOINT3', 'RARM_JOINT4', 'RARM_JOINT5']
-        elif rospy.resolve_name("~traj_input") == "/collision_larm_controller/command":
-            self.names = ['LARM_JOINT0', 'LARM_JOINT1', 'LARM_JOINT2', 'LARM_JOINT3', 'LARM_JOINT4', 'LARM_JOINT5']
-        else:
-            print("UNRECOGNISED TRAJECTORY INPUT: Valid trajectory input topics are: /collision_botharms_controller/command, /collision_rarm_controller/command and /collision_larm_controller/command")
-            exit(1)
 
         # Setup EXOTica scene with corresponding JointGroup
         init = exo.Initializers.SceneInitializer()
@@ -46,8 +39,24 @@ class SelfCollisionCheck:
         init[1]['CollisionScene'] = 'CollisionSceneFCLLatest'
         self.scene = exo.Setup.create_scene(init)
         
-        # Get velocity and acceleration joint limits
+        # Get velocity limits
         self.velocity_limits = self.scene.get_kinematic_tree().get_velocity_limits()
+        # Get acceleration limits from the URDF - not part of the URDF standard and so must be manually retrieved
+        rospack = RosPack()
+        urdf = parse(rospack.get_path("nextagea_description") + "/urdf/NextageAOpen.urdf")
+        joints = urdf.getElementsByTagName("joint")[-15:] # Nextage has 15 joints: 1 CHEST, 2 HEAD, 6 LARM, 6 RARM
+        all_acceleration_limits = np.array([joint.getElementsByTagName("limit")[0].getAttribute("acceleration") for joint in joints])
+
+        # Set names for joint group and select acceleration limits to match
+        if rospy.resolve_name("~traj_input") == "/collision_botharms_controller/command":
+            self.names = ['LARM_JOINT0', 'LARM_JOINT1', 'LARM_JOINT2', 'LARM_JOINT3', 'LARM_JOINT4', 'LARM_JOINT5', 'RARM_JOINT0', 'RARM_JOINT1', 'RARM_JOINT2', 'RARM_JOINT3', 'RARM_JOINT4', 'RARM_JOINT5']
+            self.acceleration_limits = np.array(all_acceleration_limits[-12:])
+        elif rospy.resolve_name("~traj_input") == "/collision_rarm_controller/command":
+            self.names = ['RARM_JOINT0', 'RARM_JOINT1', 'RARM_JOINT2', 'RARM_JOINT3', 'RARM_JOINT4', 'RARM_JOINT5']
+            self.acceleration_limits = np.array(all_acceleration_limits[-6:])
+        else:
+            self.names = ['LARM_JOINT0', 'LARM_JOINT1', 'LARM_JOINT2', 'LARM_JOINT3', 'LARM_JOINT4', 'LARM_JOINT5']
+            self.acceleration_limits = np.array(all_acceleration_limits[3:9])
 
         self.mode = MODE
         self.check_trajectory = False
@@ -88,7 +97,7 @@ class SelfCollisionCheck:
 
         return (check_result, violations)
 
-    def check_trajectory_accelerations(self, arm_state, trajectory_message):
+    def check_trajectory_accelerations(self, arm_state, acceleration_limits, trajectory_message):
         points = trajectory_message.points
 
         # Get starting position
@@ -103,7 +112,7 @@ class SelfCollisionCheck:
         velocities = np.vstack((np.zeros(np.size(velocities, 1)), velocities))
         accelerations = np.true_divide(np.diff(velocities, axis=0), np.diff(t)[:,None])
         accelerations = np.vstack((np.zeros(np.size(accelerations, 1)), accelerations))
-        acceleration_check = (accelerations < acceleration_limit) & (accelerations > -acceleration_limit)
+        acceleration_check = (accelerations < acceleration_limits) & (accelerations > -acceleration_limits)
         check_result = acceleration_check.all()
 
         # Identify failures & their timestamps
@@ -137,8 +146,8 @@ class SelfCollisionCheck:
             if self.check_trajectory:
 
                 traj_check = self.check_trajectory_collisions(self.scene, self.arm_state, self.names, self.trajectory_message)
-                vel_check, vel_vals = self.check_trajectory_velocities(self.arm_state, self.velocity_limits self.trajectory_message)
-                accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_state, self.trajectory_message)
+                vel_check, vel_vals = self.check_trajectory_velocities(self.arm_state, self.velocity_limits, self.trajectory_message)
+                accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_state, self.acceleration_limits, self.trajectory_message)
 
                 # Checks in following order: self-collision, velocity limits, acceleration limits
                 if traj_check and vel_check and accel_check:
