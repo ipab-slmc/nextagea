@@ -45,7 +45,7 @@ class SelfCollisionCheck:
         rospack = RosPack()
         urdf = parse(rospack.get_path("nextagea_description") + "/urdf/NextageAOpen.urdf")
         joints = urdf.getElementsByTagName("joint")[-15:] # Nextage has 15 joints: 1 CHEST, 2 HEAD, 6 LARM, 6 RARM
-        all_acceleration_limits = np.array([joint.getElementsByTagName("limit")[0].getAttribute("acceleration") for joint in joints])
+        all_acceleration_limits = [float(joint.getElementsByTagName("limit")[0].getAttribute("acceleration")) for joint in joints]
 
         # Set names for joint group and select acceleration limits to match
         if rospy.resolve_name("~traj_input") == "/collision_botharms_controller/command":
@@ -142,7 +142,7 @@ class SelfCollisionCheck:
 
     def spin(self):
         while not rospy.is_shutdown():
-#            try:
+            try:
             if self.check_trajectory:
 
                 traj_check = self.check_trajectory_collisions(self.scene, self.arm_state, self.names, self.trajectory_message)
@@ -194,11 +194,11 @@ class SelfCollisionCheck:
                 
                 self.check_trajectory = False
 
-#            except Exception as e:
-#                print(colours.FAIL + "[ERROR] Self-collision check failed due to:")
-#                print(e)
-#                print(colours.ENDC)
-#                self.check_trajectory = False
+            except Exception as e:
+                print(colours.FAIL + "[ERROR] Self-collision check failed due to:")
+                print(e)
+                print(colours.ENDC)
+                self.check_trajectory = False
 
             self.rate.sleep()
 
