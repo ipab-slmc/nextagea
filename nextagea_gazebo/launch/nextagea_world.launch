@@ -46,7 +46,7 @@
     <param name="collision_mode" value="$(arg collision_mode)"/>
     <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
     <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
-    <remap from="~arm_input" to="/$(arg controller_type)_controller/state" />
+    <remap from="~joint_state" to="/joint_states" />
   </node>
 
   <!-- start gazebo server-->
