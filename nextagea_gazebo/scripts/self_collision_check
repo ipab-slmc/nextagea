@@ -60,7 +60,7 @@ class SelfCollisionCheck:
             self.acceleration_limits = np.array(all_acceleration_limits[-6:])
         else:
             self.names = ['LARM_JOINT0', 'LARM_JOINT1', 'LARM_JOINT2', 'LARM_JOINT3', 'LARM_JOINT4', 'LARM_JOINT5']
-            self.acceleration_limits = np.array(all_acceleration_limits[3:9])
+            self.acceleration_limits = np.array(all_acceleration_limits[3:9]) # Ignores head and chest joints
 
         self.check_trajectory = False
         self.rate = rospy.Rate(10)
@@ -128,15 +128,13 @@ class SelfCollisionCheck:
         return (check_result, violations)
 
     def check_trajectory_collisions(self, scene, arm_state, joint_names, trajectory_message):
-        # Find robot's current state
-        current_arms = list(arm_state.actual.positions)
 
         # Update model with current joint positions
-        joint_dict = {name : current_arms[i] for i, name in enumerate(joint_names)}
+        joint_dict = {name : arm_state.actual.positions[i] for i, name in enumerate(joint_names)}
         scene.set_model_state_map(joint_dict)
 
         # Strip JointTrajectory down to be in EXOTica solution form
-        list_traj = [current_arms]
+        list_traj = [list(arm_state.actual.positions)]
         for i in range(0, len(trajectory_message.points)):
             list_traj.append(list(trajectory_message.points[i].positions))
         exotica_traj = np.array([np.array(x) for x in list_traj])
@@ -165,7 +163,7 @@ class SelfCollisionCheck:
                         traj_check = True
                         vel_check, vel_vals = self.check_trajectory_velocities(self.arm_state, self.velocity_limits, self.trajectory_message)
                         accel_check, accel_vals = (True, [])
-                        
+
                     # if checking only accelerations
                     else:
                         traj_check = True
@@ -197,7 +195,7 @@ class SelfCollisionCheck:
                             print(colours.ENDC)
                             self.output_traj.publish(self.trajectory_message)
                         elif self.mode == 'error':
-                            print(colours.FAIL + "[ERROR] Velocity limits exceeded:")
+                            print(colours.FAIL + "[ERROR] Velocity limits exceeded at following times and links:")
                             for pose in vel_vals:
                                 print(self.names[int(pose[1])] + " at t = " + str(pose[0]))
                             print(colours.ENDC)
@@ -210,7 +208,7 @@ class SelfCollisionCheck:
                             print(colours.ENDC)
                             self.output_traj.publish(self.trajectory_message)
                         elif self.mode == 'error':
-                            print(colours.FAIL + "[ERROR] Acceleration limits exceeded:")
+                            print(colours.FAIL + "[ERROR] Acceleration limits exceeded at following times and links:")
                             for pose in accel_vals:
                                 print(self.names[int(pose[1])] + " at t = " + str(pose[0]))
                             print(colours.ENDC)
@@ -231,7 +229,7 @@ def main(args):
     # Get controller_type, mode and check parameters
     valid_mode = ["warn", "error"]
     valid_type = ["botharms", "rarm", "larm"]
-    valid_check = ["cva", "v", "a"]
+    valid_check = ["cva", "c", "v", "a"]
 
     MODE = rospy.get_param("/self_collision_check/collision_mode")
     CONTROLLER_TYPE = rospy.get_param("/self_collision_check/controller_type")
