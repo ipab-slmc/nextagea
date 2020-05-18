@@ -83,11 +83,11 @@ class SelfCollisionCheck:
                         message = "Self-collision detected on following links:\n"
                         if self.mode == 'warn':
                             # Print warning, but also pass through trajectory
-                            rospy.logwarn(message + str("\n".join(get_colliding_links(self.scene))))
+                            rospy.logwarn(message + str("\n".join(["%s - %s: %s" % collision for collision in get_colliding_links(self.scene)])))
                             self.output_traj.publish(self.trajectory_message)
                         elif self.mode == 'error':
                             # Print error, don't pass through trajectory
-                            rospy.logerr(message + str("\n".join(get_colliding_links(self.scene))))
+                            rospy.logerr(message + str("\n".join(["%s - %s: %s" % collision for collision in get_colliding_links(self.scene)])))
                             get_colliding_links(self.scene)
                     
                     self.check_trajectory = False
