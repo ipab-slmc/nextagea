@@ -587,7 +587,7 @@
     <child link="CHEST_JOINT0_Link"/>
     <origin xyz="0 0 0.267" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-3.14159" upper="3.14159" effort="100" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-3.14159" upper="3.14159" effort="100" velocity="1.0"/>
     <dynamics damping="0.2" friction="0"/>
   </joint>
 
@@ -597,7 +597,7 @@
     <child link="HEAD_JOINT0_Link"/>
     <origin xyz="0 0 0.302" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-1.22173" upper="1.22173" effort="100" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-1.22173" upper="1.22173" effort="100" velocity="1.0"/>
   </joint>
 
 
@@ -607,7 +607,7 @@
     <child link="HEAD_JOINT1_Link"/>
     <origin xyz="0 0 0.08" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-0.401425" upper="1.308997" effort="100" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-0.401425" upper="1.308997" effort="100" velocity="1.0"/>
   </joint>
 
 
@@ -617,7 +617,7 @@
     <child link="LARM_JOINT0_Link"/>
     <origin xyz="0.04 0.135 0.1015" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-1.5707963" upper="1.5707963" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-1.5707963" upper="1.5707963" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -627,7 +627,7 @@
     <child link="LARM_JOINT1_Link"/>
     <origin xyz="0 0 0.066" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-2.44346" upper="1.0471975" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-2.44346" upper="1.0471975" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -638,7 +638,7 @@
     <child link="LARM_JOINT2_Link"/>
     <origin xyz="0 0.095 -0.25" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-1.22173" upper="1.5707963" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-1.22173" upper="1.5707963" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -649,7 +649,7 @@
     <child link="LARM_JOINT3_Link"/>
     <origin xyz="0.1805 0 -0.03" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-3.1415926" upper="1.7453292" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-3.1415926" upper="1.7453292" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -659,7 +659,7 @@
     <child link="LARM_JOINT4_Link"/>
     <origin xyz="0.1495 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-3.57792" upper="1.134464" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-3.57792" upper="1.134464" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -670,7 +670,7 @@
     <child link="LARM_JOINT5_Link"/>
     <origin xyz="0 0 -0.1335" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-4.7123889" upper="4.7123889" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-4.7123889" upper="4.7123889" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -680,7 +680,7 @@
     <child link="RARM_JOINT0_Link"/>
     <origin xyz="0.04 -0.135 0.1015" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-1.570796" upper="1.570796" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-1.570796" upper="1.570796" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -691,7 +691,7 @@
     <child link="RARM_JOINT1_Link"/>
     <origin xyz="0 0 0.066" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-2.44346" upper="1.047197" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-2.44346" upper="1.047197" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -702,7 +702,7 @@
     <child link="RARM_JOINT2_Link"/>
     <origin xyz="0 -0.095 -0.25" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-1.22173" upper="1.570796" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-1.22173" upper="1.570796" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -713,7 +713,7 @@
     <child link="RARM_JOINT3_Link"/>
     <origin xyz="0.1805 0 -0.03" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
-    <limit lower="-1.74532" upper="3.141592" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-1.74532" upper="3.141592" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -724,7 +724,7 @@
     <child link="RARM_JOINT4_Link"/>
     <origin xyz="0.1495 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
-    <limit lower="-3.5779" upper="1.134464" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-3.5779" upper="1.134464" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 
@@ -735,7 +735,7 @@
     <child link="RARM_JOINT5_Link"/>
     <origin xyz="0 0 -0.1335" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-4.712388" upper="4.712388" effort="150" velocity="1.0" acceleration="0.5"/>
+    <limit lower="-4.712388" upper="4.712388" effort="150" velocity="1.0"/>
     <dynamics damping="1.5" friction="0"/>
   </joint>
 

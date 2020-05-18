@@ -10,8 +10,7 @@ import numpy as np
 from pyexotica.tools import check_whether_trajectory_is_collision_free_by_subsampling, get_colliding_links
 from trajectory_msgs.msg import JointTrajectory
 from control_msgs.msg import JointTrajectoryControllerState
-from xml.dom.minidom import parse
-from rospkg import RosPack
+from json import loads
 
 class colours:
     WARNING = '\033[93m'
@@ -23,11 +22,12 @@ class SelfCollisionCheck:
     Node sits in front of trajectory controllers and filters out potentially harmful trajectories that may cause 
     self-collisions'''
 
-    def __init__(self, MODE, CONTROLLER_TYPE, CHECK):
+    def __init__(self, MODE, CONTROLLER_TYPE, CHECK, ALL_ACCELERATION_LIMITS):
 
         self.controller_type = CONTROLLER_TYPE
         self.mode = MODE
         self.check = CHECK
+        all_acceleration_limits = ALL_ACCELERATION_LIMITS
 
         # Initial setup and sub/pub to nodes
         self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.input_callback, queue_size=1)
@@ -45,13 +45,8 @@ class SelfCollisionCheck:
         
         # Get velocity limits
         self.velocity_limits = self.scene.get_kinematic_tree().get_velocity_limits()
-        # Get acceleration limits from the URDF - not part of the URDF standard and so must be manually retrieved
-        rospack = RosPack()
-        urdf = parse(rospack.get_path("nextagea_description") + "/urdf/NextageAOpen.urdf")
-        joints = urdf.getElementsByTagName("joint")[-15:] # Nextage has 15 joints: 1 CHEST, 2 HEAD, 6 LARM, 6 RARM
-        all_acceleration_limits = [float(joint.getElementsByTagName("limit")[0].getAttribute("acceleration")) for joint in joints]
 
-        # Set names for joint group and select acceleration limits to match
+        # Set names for joint group and select acceleration limits to match - acceleration limits passed in from rosparams (see launch file: nextagea_world.launch)
         if rospy.resolve_name("~traj_input") == "/collision_botharms_controller/command":
             self.names = ['LARM_JOINT0', 'LARM_JOINT1', 'LARM_JOINT2', 'LARM_JOINT3', 'LARM_JOINT4', 'LARM_JOINT5', 'RARM_JOINT0', 'RARM_JOINT1', 'RARM_JOINT2', 'RARM_JOINT3', 'RARM_JOINT4', 'RARM_JOINT5']
             self.acceleration_limits = np.array(all_acceleration_limits[-12:])
@@ -234,6 +229,7 @@ def main(args):
     MODE = rospy.get_param("/self_collision_check/collision_mode")
     CONTROLLER_TYPE = rospy.get_param("/self_collision_check/controller_type")
     CHECK = rospy.get_param("/self_collision_check/check_param")
+    ALL_ACCELERATION_LIMITS = np.array(loads(rospy.get_param("/self_collision_check/all_acceleration_limits")))
     if MODE not in valid_mode:
         print("Detected self_collision_check mode: " + MODE)
         print("Invalid collision mode! Use only the following: " + str(valid_mode))
@@ -245,10 +241,14 @@ def main(args):
     if CHECK not in valid_check:
         print("Detected self_collision_check check parameter: " + CHECK)
         print("Invalid checking options! Use only the following: " + str(valid_check))
-        exit(1)  
+        exit(1)
+    if ALL_ACCELERATION_LIMITS.size != 15:
+        print("Incorrect acceleration limit size! Detected: " + str(ALL_ACCELERATION_LIMITS.size))
+        print("Acceleration limits must be size=15: CHEST *1, HEAD *2, LARM *6, RARM *6")
+        exit(1)
 
     rospy.init_node('self_collision_check')
-    col = SelfCollisionCheck(MODE, CONTROLLER_TYPE, CHECK)
+    col = SelfCollisionCheck(MODE, CONTROLLER_TYPE, CHECK, ALL_ACCELERATION_LIMITS)
     try:
         col.spin()
     except KeyboardInterrupt:

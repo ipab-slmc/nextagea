@@ -43,11 +43,15 @@
   <arg name="collision_mode" value="error"/>
   <!-- use check_param to select what you want to check: self-collision + velocities + acceleration (cva), just self-collision (c), just velocity (v), just acceleration (a)-->
   <arg name="check_param" value="cva"/>
+  <!-- use all_acceleration_limits to pass in acceleration limits for each of the 15 Nextage joints: CHEST *1, HEAD *2, LARM *6, RARM *6-->
+  <!-- NOTE: Velocity and joint limits are defined in the URDF-->
+  <arg name="all_acceleration_limits" value="[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]"/>
 
   <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="">
     <param name="controller_type" value="$(arg controller_type)"/>
     <param name="collision_mode" value="$(arg collision_mode)"/>
     <param name="check_param" value="$(arg check_param)"/>
+    <param name="all_acceleration_limits" value="$(arg all_acceleration_limits)"/>
     <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
     <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
     <remap from="~arm_input" to="/$(arg controller_type)_controller/state" />
