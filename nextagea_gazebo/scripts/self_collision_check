@@ -160,9 +160,15 @@ class SelfCollisionCheck:
                         accel_check, accel_vals = (True, [])
 
                     # if checking only accelerations
-                    else:
+                    elif self.check == "a":
                         traj_check = True
                         vel_check, vel_vals = (True, [])
+                        accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_state, self.acceleration_limits, self.trajectory_message)
+
+                    # else if checking velocities and accelerations
+                    else:
+                        traj_check = True
+                        vel_check, vel_vals = self.check_trajectory_velocities(self.arm_state, self.velocity_limits, self.trajectory_message)
                         accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_state, self.acceleration_limits, self.trajectory_message)
 
                     # Validates checks in following order: self-collision, velocity limits, acceleration limits - prints first failure
@@ -224,7 +230,7 @@ def main(args):
     # Get controller_type, mode and check parameters
     valid_mode = ["warn", "error"]
     valid_type = ["botharms", "rarm", "larm"]
-    valid_check = ["cva", "c", "v", "a"]
+    valid_check = ["cva", "c", "v", "a", "va"]
 
     MODE = rospy.get_param("/self_collision_check/collision_mode")
     CONTROLLER_TYPE = rospy.get_param("/self_collision_check/controller_type")

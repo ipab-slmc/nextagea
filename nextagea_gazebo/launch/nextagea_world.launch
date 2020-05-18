@@ -41,7 +41,7 @@
   <arg name="controller_type" value="botharms"/>
   <!-- use collision_mode to select error/warn behaviour-->
   <arg name="collision_mode" value="error"/>
-  <!-- use check_param to select what you want to check: self-collision + velocities + acceleration (cva), just self-collision (c), just velocity (v), just acceleration (a)-->
+  <!-- use check_param to select what you want to check: self-collision + velocities + acceleration (cva), just self-collision (c), just velocity (v), just acceleration (a) or velocity and acceleration (va) -->
   <arg name="check_param" value="cva"/>
   <!-- use all_acceleration_limits to pass in acceleration limits for each of the 15 Nextage joints: CHEST *1, HEAD *2, LARM *6, RARM *6-->
   <!-- NOTE: Velocity and joint limits are defined in the URDF-->
