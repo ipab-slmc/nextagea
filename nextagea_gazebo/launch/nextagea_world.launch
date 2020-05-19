@@ -36,6 +36,27 @@
   <arg unless="$(arg debug)" name="script_type" value="gzserver"/>
   <arg     if="$(arg debug)" name="script_type" value="debug"/>
 
+  <!-- start self-collision checker -->
+  <!-- use controller_type to identify whether using botharms/rarm/larm controller-->
+  <arg name="controller_type" value="botharms"/>
+  <!-- use collision_mode to select error/warn behaviour-->
+  <arg name="collision_mode" value="error"/>
+  <!-- use check_param to select what you want to check: self-collision + velocities + acceleration (cva), just self-collision (c), just velocity (v), just acceleration (a) or velocity and acceleration (va) -->
+  <arg name="check_param" value="cva"/>
+  <!-- use all_acceleration_limits to pass in acceleration limits for each of the 15 Nextage joints: CHEST *1, HEAD *2, LARM *6, RARM *6-->
+  <!-- NOTE: Velocity and joint limits are defined in the URDF-->
+  <arg name="all_acceleration_limits" value="[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]"/>
+
+  <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="">
+    <param name="controller_type" value="$(arg controller_type)"/>
+    <param name="collision_mode" value="$(arg collision_mode)"/>
+    <param name="check_param" value="$(arg check_param)"/>
+    <param name="all_acceleration_limits" value="$(arg all_acceleration_limits)"/>
+    <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
+    <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
+    <remap from="~joint_state" to="/joint_states" />
+  </node>
+
   <!-- start gazebo server-->
   <node name="gazebo" pkg="gazebo_ros" type="$(arg script_type)" respawn="false" output="screen"
 	args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) -e $(arg physics) $(arg extra_gazebo_args) $(arg world_name)" >
