@@ -9,30 +9,25 @@ import rospy
 import numpy as np
 from pyexotica.tools import check_whether_trajectory_is_collision_free_by_subsampling, get_colliding_links
 from trajectory_msgs.msg import JointTrajectory
-from control_msgs.msg import JointTrajectoryControllerState
+from sensor_msgs.msg import JointState
 from json import loads
-
-class colours:
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
 
 class SelfCollisionCheck:
     '''Trajectory checker for the Nextage platform - checks self-collision, velocity and acceleration limits. 
     Node sits in front of trajectory controllers and filters out potentially harmful trajectories that may cause 
     self-collisions'''
 
-    def __init__(self, MODE, CONTROLLER_TYPE, CHECK, ALL_ACCELERATION_LIMITS):
+    def __init__(self, mode, controller_type, check, all_acceleration_limits):
 
-        self.controller_type = CONTROLLER_TYPE
-        self.mode = MODE
-        self.check = CHECK
-        all_acceleration_limits = ALL_ACCELERATION_LIMITS
+        self.controller_type = controller_type
+        self.mode = mode
+        self.check = check
+        all_acceleration_limits = all_acceleration_limits
 
         # Initial setup and sub/pub to nodes
         self.input_traj = rospy.Subscriber(rospy.resolve_name("~traj_input"), JointTrajectory, self.input_callback, queue_size=1)
         self.output_traj = rospy.Publisher(rospy.resolve_name("~traj_output"), JointTrajectory, queue_size=1)
-        self.arm_info = rospy.Subscriber(rospy.resolve_name("~arm_input"), JointTrajectoryControllerState, self.arm_callback, queue_size=1)
+        self.arm_info = rospy.Subscriber(rospy.resolve_name("~joint_state"), JointState, self.arm_callback, queue_size=1)
 
         # Setup EXOTica scene with corresponding JointGroup
         init = exo.Initializers.SceneInitializer()
@@ -65,16 +60,25 @@ class SelfCollisionCheck:
         if self.check_trajectory == False:
             self.check_trajectory = True
             self.trajectory_message = data
-    
+        # Else warn that the trajectory is being ignored
+        else:
+            rospy.logwarn("Trajectory currently being processed, new trajectory is being ignored!")
+
     def arm_callback(self, data):
-        # Get current joint states
-        self.arm_state = data
+        # Get current joint states for joint group
+        joint_states = data.position
+        if rospy.resolve_name("~traj_input") == "/collision_botharms_controller/command":
+            self.arm_pos = joint_states[-12:]
+        elif rospy.resolve_name("~traj_input") == "/collision_rarm_controller/command":
+            self.arm_pos = joint_states[-6:]
+        else:
+            self.arm_pos = joint_states[3:9]
     
-    def check_trajectory_velocities(self, arm_state, velocity_limits, trajectory_message):
+    def check_trajectory_velocities(self, arm_pos, velocity_limits, trajectory_message):
         points = trajectory_message.points
 
         # Get starting position
-        pos = [list(arm_state.actual.positions)]
+        pos = [list(arm_pos)]
         t = [0]
         for p in points:
             t.append(p.time_from_start.to_sec())
@@ -95,11 +99,11 @@ class SelfCollisionCheck:
 
         return (check_result, violations)
 
-    def check_trajectory_accelerations(self, arm_state, acceleration_limits, trajectory_message):
+    def check_trajectory_accelerations(self, arm_pos, acceleration_limits, trajectory_message):
         points = trajectory_message.points
 
         # Get starting position
-        pos = [list(arm_state.actual.positions)]
+        pos = [list(arm_pos)]
         t = [0]
         for p in points:
             t.append(p.time_from_start.to_sec())
@@ -122,14 +126,14 @@ class SelfCollisionCheck:
 
         return (check_result, violations)
 
-    def check_trajectory_collisions(self, scene, arm_state, joint_names, trajectory_message):
+    def check_trajectory_collisions(self, scene, arm_pos, joint_names, trajectory_message):
 
         # Update model with current joint positions
-        joint_dict = {name : arm_state.actual.positions[i] for i, name in enumerate(joint_names)}
+        joint_dict = {name : arm_pos[i] for i, name in enumerate(joint_names)}
         scene.set_model_state_map(joint_dict)
 
         # Strip JointTrajectory down to be in EXOTica solution form
-        list_traj = [list(arm_state.actual.positions)]
+        list_traj = [arm_pos]
         for i in range(0, len(trajectory_message.points)):
             list_traj.append(list(trajectory_message.points[i].positions))
         exotica_traj = np.array([np.array(x) for x in list_traj])
@@ -143,33 +147,33 @@ class SelfCollisionCheck:
 
                     # if checking collisions, velocities and accelerations
                     if self.check == "cva":
-                        traj_check = self.check_trajectory_collisions(self.scene, self.arm_state, self.names, self.trajectory_message)
-                        vel_check, vel_vals = self.check_trajectory_velocities(self.arm_state, self.velocity_limits, self.trajectory_message)
-                        accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_state, self.acceleration_limits, self.trajectory_message)
+                        traj_check = self.check_trajectory_collisions(self.scene, self.arm_pos, self.names, self.trajectory_message)
+                        vel_check, vel_vals = self.check_trajectory_velocities(self.arm_pos, self.velocity_limits, self.trajectory_message)
+                        accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_pos, self.acceleration_limits, self.trajectory_message)
 
                     # if checking only collisions
                     elif self.check == "c":
-                        traj_check = self.check_trajectory_collisions(self.scene, self.arm_state, self.names, self.trajectory_message)
+                        traj_check = self.check_trajectory_collisions(self.scene, self.arm_pos, self.names, self.trajectory_message)
                         vel_check, vel_vals = (True, [])
                         accel_check, accel_vals = (True, [])
 
                     # if checking only velocities
                     elif self.check == "v":
                         traj_check = True
-                        vel_check, vel_vals = self.check_trajectory_velocities(self.arm_state, self.velocity_limits, self.trajectory_message)
+                        vel_check, vel_vals = self.check_trajectory_velocities(self.arm_pos, self.velocity_limits, self.trajectory_message)
                         accel_check, accel_vals = (True, [])
 
                     # if checking only accelerations
                     elif self.check == "a":
                         traj_check = True
                         vel_check, vel_vals = (True, [])
-                        accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_state, self.acceleration_limits, self.trajectory_message)
+                        accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_pos, self.acceleration_limits, self.trajectory_message)
 
                     # else if checking velocities and accelerations
                     else:
                         traj_check = True
-                        vel_check, vel_vals = self.check_trajectory_velocities(self.arm_state, self.velocity_limits, self.trajectory_message)
-                        accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_state, self.acceleration_limits, self.trajectory_message)
+                        vel_check, vel_vals = self.check_trajectory_velocities(self.arm_pos, self.velocity_limits, self.trajectory_message)
+                        accel_check, accel_vals = self.check_trajectory_accelerations(self.arm_pos, self.acceleration_limits, self.trajectory_message)
 
                     # Validates checks in following order: self-collision, velocity limits, acceleration limits - prints first failure
                     if traj_check and vel_check and accel_check:
@@ -178,48 +182,43 @@ class SelfCollisionCheck:
 
                     # If warn, pass trajectory, if error withold trajectory
                     elif not traj_check:
+                        message = "Self-collision detected on following links:\n" + str("\n".join(["%s - %s: %s" % collision for collision in get_colliding_links(self.scene)]))
+
                         if self.mode == 'warn':
-                            print(colours.WARNING + "[WARN] Self-collision detected on following links:")
-                            get_colliding_links(self.scene)
-                            print(colours.ENDC)
+                            rospy.logwarn(message)
                             self.output_traj.publish(self.trajectory_message)
                         elif self.mode == 'error':
-                            print(colours.FAIL + "[ERROR] Self-collision detected on following links:")
-                            get_colliding_links(self.scene)
-                            print(colours.ENDC)
+                            rospy.logerr(message)
 
                     elif not vel_check:
+                        violations = []
+                        for pose in vel_vals:
+                            violations.append(self.names[int(pose[1])] + " at t = " + str(pose[0]))
+                        message = "Velocity limits exceeded at following times and links:\n" + str("\n".join(violations))
+
                         if self.mode == 'warn':
-                            print(colours.WARNING + "[WARN] Velocity limits exceeded at following times and links:")
-                            for pose in vel_vals:
-                                print(self.names[int(pose[1])] + " at t = " + str(pose[0]))
-                            print(colours.ENDC)
+                            rospy.logwarn(message)
                             self.output_traj.publish(self.trajectory_message)
                         elif self.mode == 'error':
-                            print(colours.FAIL + "[ERROR] Velocity limits exceeded at following times and links:")
-                            for pose in vel_vals:
-                                print(self.names[int(pose[1])] + " at t = " + str(pose[0]))
-                            print(colours.ENDC)
+                            rospy.logerr(message)
 
                     elif not accel_check:
+                        violations = []
+                        for pose in accel_vals:
+                            violations.append(self.names[int(pose[1])] + " at t = " + str(pose[0]))
+                        message = "Acceleration limits exceeded at following times and links:\n" + str("\n".join(violations))
+
                         if self.mode == 'warn':
-                            print(colours.WARNING + "[WARN] Acceleration limits exceeded at following times and links:")
-                            for pose in accel_vals:
-                                print(self.names[int(pose[1])] + " at t = " + str(pose[0]))
-                            print(colours.ENDC)
+                            rospy.logwarn(message)
                             self.output_traj.publish(self.trajectory_message)
                         elif self.mode == 'error':
-                            print(colours.FAIL + "[ERROR] Acceleration limits exceeded at following times and links:")
-                            for pose in accel_vals:
-                                print(self.names[int(pose[1])] + " at t = " + str(pose[0]))
+                            rospy.logerr(message)
                             print(colours.ENDC)
                     
                     self.check_trajectory = False
 
-            except Exception as e:
-                print(colours.FAIL + "[ERROR] Self-collision check failed due to:")
-                print(e)
-                print(colours.ENDC)
+            except IndexError:
+                rospy.logerr("Incorrect trajectory size!")
                 self.check_trajectory = False
 
             self.rate.sleep()

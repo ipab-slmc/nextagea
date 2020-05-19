@@ -54,7 +54,7 @@
     <param name="all_acceleration_limits" value="$(arg all_acceleration_limits)"/>
     <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
     <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
-    <remap from="~arm_input" to="/$(arg controller_type)_controller/state" />
+    <remap from="~joint_state" to="/joint_states" />
   </node>
 
   <!-- start gazebo server-->
