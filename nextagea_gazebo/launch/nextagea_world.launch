@@ -66,11 +66,11 @@
 
   <!-- Load universal robotic description format (URDF) -->
   <arg name="model" value="$(find nextagea_description)/urdf/nxao_gz.xacro" />
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(arg model)'" />
+  <param name="robot_description" command="xacro '$(arg model)'" />
   <node pkg="gazebo_ros" type="spawn_model" name="urdf_spawner" respawn="false" output="screen"
         args="$(arg gzpose) -J LARM_JOINT2 -2.0 -J RARM_JOINT2 -2.0 -urdf -model NextageAOpen -param robot_description" />
 
-  <include file="$(find nextagea_gazebo)/launch/nextagea_gazebo_control.launch" />        
+  <include file="$(find nextagea_gazebo)/launch/nextagea_gazebo_control.launch" />
 
   <!-- convert joint states to TF transforms -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
