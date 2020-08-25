@@ -37,30 +37,27 @@
   <arg     if="$(arg debug)" name="script_type" value="debug"/>
 
   <!-- start gazebo server-->
-  <node name="gazebo" pkg="gazebo_ros" type="$(arg script_type)" respawn="false" output="screen"
-	args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) -e $(arg physics) $(arg extra_gazebo_args) $(arg world_name)" required="true">
-
-    <remap from="rarm_controller/follow_joint_trajectory" to="rarm_controller/follow_joint_trajectory_action" />
-    <remap from="larm_controller/follow_joint_trajectory" to="larm_controller/follow_joint_trajectory_action" />
-    <remap from="head_controller/follow_joint_trajectory" to="head_controller/follow_joint_trajectory_action" />
-    <remap from="torso_controller/follow_joint_trajectory" to="torso_controller/follow_joint_trajectory_action" />
+  <node ns="nextagea" name="gazebo" pkg="gazebo_ros" type="$(arg script_type)" respawn="false" output="screen"
+  args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) -e $(arg physics) $(arg extra_gazebo_args) $(arg world_name)" required="true">
   </node>
   <!-- start gazebo client -->
   <group if="$(arg gui)">
-    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
+    <node ns="nextagea" name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
   </group>
 
 
   <!-- Load universal robotic description format (URDF) -->
   <arg name="model" value="$(find nextagea_description)/urdf/NextageAOpen_gazebo.urdf.xacro" />
   <param name="robot_description" command="xacro '$(arg model)'" />
-  <node pkg="gazebo_ros" type="spawn_model" name="urdf_spawner" respawn="false" output="screen"
-        args="$(arg gzpose) -J LARM_JOINT2 -2.0 -J RARM_JOINT2 -2.0 -urdf -model NextageAOpen -param robot_description" />
+  <node ns="nextagea" pkg="gazebo_ros" type="spawn_model" name="urdf_spawner" respawn="false" output="screen"
+        args="$(arg gzpose) -J LARM_JOINT2 -2.0 -J RARM_JOINT2 -2.0 -urdf -model NextageAOpen -param /robot_description -gazebo_namespace /nextagea/gazebo" />
 
   <include file="$(find nextagea_gazebo)/launch/nextagea_gazebo_control.launch" />        
 
   <!-- convert joint states to TF transforms -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
-	respawn="false" output="screen" />
+  respawn="false" output="screen">
+    <remap from="joint_states" to="/nextagea/joint_states" />
+  </node>
 
 </launch>
