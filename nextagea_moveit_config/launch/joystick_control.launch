@@ -1,5 +1,6 @@
 <launch>
-  <!-- See http://docs.ros.org/indigo/api/moveit_ros_visualization/html/doc/joystick.html for documentation -->
+  <!-- See moveit_ros/visualization/doc/joystick.rst for documentation -->
+
   <arg name="dev" default="/dev/input/js0" />
 
   <!-- Launch joy node -->
@@ -12,5 +13,5 @@
 
   <!-- Launch python interface -->
   <node pkg="moveit_ros_visualization" type="moveit_joy.py" output="screen" name="moveit_joy"/>
-        
+
 </launch>

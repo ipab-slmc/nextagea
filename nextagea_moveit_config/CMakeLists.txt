@@ -1,20 +1,10 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.1.3)
 project(nextagea_moveit_config)
 
 find_package(catkin REQUIRED)
 
 catkin_package()
 
-install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  PATTERN "setup_assistant.launch" EXCLUDE)
 install(DIRECTORY config DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
-# installing .desktop into ~/Desktop
-set(SETUP_DIRECTORY $ENV{XDG_DESKTOP_DIR})
-if ("${SETUP_DIRECTORY}" STREQUAL "")
-  set(SETUP_DIRECTORY $ENV{HOME}/Desktop)
-endif ("${SETUP_DIRECTORY}" STREQUAL "")
-
-set(PROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR})
-configure_file(${PROJECT_SOURCE_DIR}/NextageAROS.desktop.in ${SETUP_DIRECTORY}/NextageAROS.desktop)
-add_custom_target(desktop ALL DEPENDS ${PROJECT_SOURCE_DIR}/NextageAROS.desktop.in)
-
