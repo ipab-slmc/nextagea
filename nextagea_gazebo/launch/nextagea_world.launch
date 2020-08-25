@@ -36,22 +36,9 @@
   <arg unless="$(arg debug)" name="script_type" value="gzserver"/>
   <arg     if="$(arg debug)" name="script_type" value="debug"/>
 
-  <!-- start self-collision checker -->
-  <!-- use controller_type to identify whether using botharms/rarm/larm controller-->
-  <arg name="controller_type" value="botharms"/>
-  <!-- use collision_mode to select error/warn behaviour-->
-  <arg name="collision_mode" value="error"/>
-  <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="">
-    <param name="controller_type" value="$(arg controller_type)"/>
-    <param name="collision_mode" value="$(arg collision_mode)"/>
-    <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
-    <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
-    <remap from="~joint_state" to="/joint_states" />
-  </node>
-
   <!-- start gazebo server-->
   <node name="gazebo" pkg="gazebo_ros" type="$(arg script_type)" respawn="false" output="screen"
-	args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) -e $(arg physics) $(arg extra_gazebo_args) $(arg world_name)" >
+	args="$(arg command_arg1) $(arg command_arg2) $(arg command_arg3) -e $(arg physics) $(arg extra_gazebo_args) $(arg world_name)" required="true">
 
     <remap from="rarm_controller/follow_joint_trajectory" to="rarm_controller/follow_joint_trajectory_action" />
     <remap from="larm_controller/follow_joint_trajectory" to="larm_controller/follow_joint_trajectory_action" />
@@ -60,13 +47,13 @@
   </node>
   <!-- start gazebo client -->
   <group if="$(arg gui)">
-    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen"/>
+    <node name="gazebo_gui" pkg="gazebo_ros" type="gzclient" respawn="false" output="screen" required="true"/>
   </group>
 
 
   <!-- Load universal robotic description format (URDF) -->
-  <arg name="model" value="$(find nextagea_description)/urdf/nxao_gz.xacro" />
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(arg model)'" />
+  <arg name="model" value="$(find nextagea_description)/urdf/NextageAOpen_gazebo.urdf.xacro" />
+  <param name="robot_description" command="xacro '$(arg model)'" />
   <node pkg="gazebo_ros" type="spawn_model" name="urdf_spawner" respawn="false" output="screen"
         args="$(arg gzpose) -J LARM_JOINT2 -2.0 -J RARM_JOINT2 -2.0 -urdf -model NextageAOpen -param robot_description" />
 

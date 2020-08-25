@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<robot name="NextageAOpen"
+       xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:property name="fixed_base" value="True" />
+  
+  <xacro:include filename="$(find nextagea_description)/urdf/common.xacro" />
+  <xacro:include filename="$(find nextagea_description)/urdf/NextageAOpen.urdf.xacro" />
+  <xacro:include filename="$(find nextagea_description)/urdf/nxao_gz_camera.xacro" />
+
+  <!-- Used for fixing robot to Gazebo 'base_link' -->
+  <xacro:if value="${fixed_base}">
+    <link name="world"/> -->
+    <joint name="fixed" type="fixed">
+      <parent link="world"/>
+      <child link="base_link"/>
+      <origin xyz="0 0 -0.15" rpy="0 0 0"/>
+    </joint>
+  </xacro:if>
+
+</robot>

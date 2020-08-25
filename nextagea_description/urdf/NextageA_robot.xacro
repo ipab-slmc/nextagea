@@ -1,62 +1,7 @@
 <?xml version="1.0"?>
-<robot name="NextageAOpen"
-       xmlns:xi="http://www.w3.org/2001/xinclude"
-       xmlns:gazebo="http://playerstage.sourceforge.net/gazebo/xmlschema/#gz"
-       xmlns:model="http://playerstage.sourceforge.net/gazebo/xmlschema/#model"
-       xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
-       xmlns:body="http://playerstage.sourceforge.net/gazebo/xmlschema/#body"
-       xmlns:geom="http://playerstage.sourceforge.net/gazebo/xmlschema/#geom"
-       xmlns:joint="http://playerstage.sourceforge.net/gazebo/xmlschema/#joint"
-       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
-       xmlns:rendering="http://playerstage.sourceforge.net/gazebo/xmlschema/#rendering"
-       xmlns:renderable="http://playerstage.sourceforge.net/gazebo/xmlschema/#renderable"
-       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
-       xmlns:physics="http://playerstage.sourceforge.net/gazebo/xmlschema/#physics"
-       xmlns:xacro="http://www.ros.org/wiki/xacro">
-  <xacro:include filename="$(find nextagea_description)/urdf/materials.urdf.xacro" />
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
 
-  <xacro:macro name="transmission_nx_joint" params="name">
-    <transmission name="${name}_Trans">
-      <type>transmission_interface/SimpleTransmission</type>
-      <joint name="${name}">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>/hardwareInterface>
-      </joint>
-      <actuator name="${name}_Motor">
-        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>/hardwareInterface>
-        <mechanicalReduction>1</mechanicalReduction>
-      </actuator>
-    </transmission>
-  </xacro:macro>
-
-  <!-- Define contact properties -->
-  <xacro:macro name="gazebo_nx_link" params="name color">
-    <gazebo reference="gazebo_${name}">
-      <material>Gazebo/${color}</material>
-      <mu1 value="1.0" />
-      <mu2 value="1.0" />
-      <kp  value="1000000.0" />
-      <kd  value="100.0" />
-      <maxVel  value="100.0" />
-      <minDepth  value="0.0" />
-    </gazebo>
-  </xacro:macro>
-
-  <!-- Used for fixing robot to Gazebo 'base_link' -->
-  <xacro:if value="${fixed_base}">
-    <link name="world"/> -->
-    <joint name="fixed" type="fixed">
-      <parent link="world"/>
-      <child link="nextage_base"/>
-      <origin xyz="0 0 -0.15" rpy="0 0 0"/>
-    </joint>
-  </xacro:if>
-
-  <!-- Work-around for KDL base-link inertia problem; also adheres to ROS standard-->
-  <link name="nextage_base"/>
-  <joint name="base_to_waist" type="fixed">
-    <parent link="nextage_base"/>
-    <child link="WAIST"/>
-  </joint>
+  <xacro:include filename="$(find nextagea_description)/urdf/common.xacro" />
 
   <xacro:gazebo_nx_link name="WAIST" color="Black" />
   <link name="WAIST">
@@ -67,45 +12,15 @@
       </geometry>
     </visual>
     <collision>
-      <origin xyz="-0.19 0 -0.435" rpy="0 0 0"/>
-      <geometry>
-        <box size="0.585 0.585 0.72"/>
-      </geometry>
-    </collision>
-    <collision>
-      <origin xyz="0.0675 0.2575 -0.82" rpy="0 0 0"/>
-      <geometry>
-        <sphere radius="0.03"/>
-      </geometry>
-    </collision>
-    <collision>
-      <origin xyz="0.0675 -0.2575 -0.82" rpy="0 0 0"/>
-      <geometry>
-        <sphere radius="0.03"/>
-      </geometry>
-    </collision>
-    <collision>
-      <origin xyz="-0.4475 0.2575 -0.82" rpy="0 0 0"/>
-      <geometry>
-        <sphere radius="0.03"/>
-      </geometry>
-    </collision>
-    <collision>
-      <origin xyz="-0.4475 -0.2575 -0.82" rpy="0 0 0"/>
-      <geometry>
-        <sphere radius="0.03"/>
-      </geometry>
-    </collision>
-    <collision>
       <origin xyz="0.0 0 0.098" rpy="0 0 0"/>
       <geometry>
         <cylinder length="0.376" radius="0.06"/>
       </geometry>
     </collision>
     <inertial>
-      <mass value="10000" />
-      <origin xyz="0 0 0" rpy="0 -0 0"/>
-      <inertia ixx="20" ixy="0" ixz="0" iyy="20" iyz="0" izz="20"/>
+      <mass value="5" />
+      <origin xyz="0 0 0.15" rpy="0 0 0"/>
+      <xacro:nxa_box_inertia_def x="0.2" y="0.2" z="0.3" mass="5"/>
     </inertial>
   </link>
 
@@ -160,9 +75,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="3.0" />
-      <origin xyz="0 0 0" rpy="0 -0 0"/>
-      <inertia ixx="0.0639575" ixy="-0.00022833" ixz="0.00011172" iyy="0.0310845" iyz="6.48e-05" izz="0.0501107"/>
+      <mass value="10.0" />
+      <origin xyz="0 0 0.2" rpy="0 -0 0"/>
+      <xacro:nxa_box_inertia_def x="0.25" y="0.25" z="0.3" mass="10"/>
     </inertial>
   </link>
   
@@ -182,8 +97,8 @@
     </collision>
      <inertial>
       <mass value="0.317929" />
-      <origin xyz="-2.292e-05 0.00547848 -0.00784016" rpy="0 -0 0"/>
-      <inertia ixx="0.00027682" ixy="3e-08" ixz="-3.3e-07" iyy="0.00013009" iyz="-1.092e-05" izz="0.00020954"/>
+      <origin xyz="0 0.00547848 0" rpy="0 -0 0"/>
+      <xacro:nxa_box_inertia_def x="0.1" y="0.1" z="0.1" mass="0.317929"/>
     </inertial>
   </link>
 
@@ -202,10 +117,9 @@
       </geometry>
     </collision>
     <inertial>
-      <mass value="0.0808593" />
-      <!-- <origin xyz="5.02e-06 -0.0166777 0.0163153" rpy="0 -0 0"/> -->
-      <!-- <inertia ixx="8.07e-05" ixy="-3e-08" ixz="-4.30134e-22" iyy="3.025e-05" iyz="-1.277e-05" izz="6.637e-05"/> -->
-      <inertia ixx="1e-3" ixy="0" ixz="0" iyy="1e-3" iyz="0" izz="1e-3"/>
+      <mass value="0.4" />
+      <origin xyz="-0.05 0 0.12" rpy="0 0.26 0"/>
+      <xacro:nxa_box_inertia_def x="0.27" y="0.22" z="0.115" mass="0.4"/>
     </inertial>
   </link>
 
@@ -237,7 +151,7 @@
     </collision>
     <inertial>
       <mass value="1.32626" />
-      <origin xyz="-0.00226388 -0.00521383 0.0156081" rpy="0 -0 0"/>
+      <origin xyz="0.0 0.05 0.05" rpy="0 -0 0"/>
       <inertia ixx="0.00207537" ixy="0.00011276" ixz="8.927e-05" iyy="0.00240295" iyz="-4.57e-05" izz="0.00141912"/>
     </inertial>
   </link>
@@ -264,8 +178,8 @@
     </collision>
      <inertial>
       <mass value="1.14898" />
-      <origin xyz="-5.236e-05 0.0583134 -0.107061" rpy="0 -0 0"/>
-    <inertia ixx="0.0154168" ixy="9.95417e-07" ixz="3.38147e-06" iyy="0.0147117" iyz="0.00213719" izz="0.0012658"/>
+      <origin xyz="-0.04 0.1 -0.12" rpy="0 -0 0"/>
+      <inertia ixx="0.0154168" ixy="9.95417e-07" ixz="3.38147e-06" iyy="0.0147117" iyz="0.00213719" izz="0.0012658"/>
     </inertial>
   </link>
   
@@ -297,7 +211,7 @@
     </collision>
     <inertial>
       <mass value="0.577518" />
-      <origin xyz="-2.254e-05 0.00167107 -0.0715116" rpy="0 -0 0"/>
+      <origin xyz="0.1 0.01167107 -0.04" rpy="0 -0 0"/>
       <inertia ixx="0.00143966" ixy="-3e-07" ixz="1.2e-06" iyy="0.00141763" iyz="-7.596e-05" izz="0.0001972"/>
     </inertial>
   </link>
@@ -330,7 +244,7 @@
     </collision>
     <inertial>
       <mass value="0.457418" />
-      <origin xyz="-1.788e-05 -0.00395812 -0.20273" rpy="0 -0 0"/>
+      <origin xyz="0.1 -0.00395812 -0.00273" rpy="0 -0 0"/>
       <inertia ixx="0.00069205" ixy="3e-08" ixz="5.2e-07" iyy="0.00068903" iyz="-1.915e-05" izz="0.00013509"/>
     </inertial>
   </link>
@@ -390,7 +304,7 @@
     </collision>
     <inertial>
       <mass value="1.05156" />
-      <origin xyz="-0.048476 -3.2e-06 -0.0388988" rpy="0 -0 0"/>
+      <origin xyz="0.0 0.0 -0.08" rpy="0 -0 0"/>
       <inertia ixx="0.00194072" ixy="1.1e-07" ixz="-0.00042482" iyy="0.00209392" iyz="1.2e-07" izz="0.00035788"/>
     </inertial>
   </link>
@@ -423,7 +337,7 @@
     </collision>
     <inertial>
       <mass value="1.32626" />
-      <origin xyz="-0.00226388 0.00521383 0.0156081" rpy="0 -0 0"/>
+      <origin xyz="0.0 -0.05 0.05" rpy="0 -0 0"/>
       <inertia ixx="0.00207537" ixy="-0.00011276" ixz="8.927e-05" iyy="0.00240295" iyz="4.57e-05" izz="0.00141912"/>
     </inertial>
   </link>
@@ -450,7 +364,7 @@
     </collision>
     <inertial>
       <mass value="1.14898" />
-      <origin xyz="-5.236e-05 -0.0583134 -0.107061" rpy="0 -0 0"/>
+      <origin xyz="-0.04 -0.1 -0.12" rpy="0 -0 0"/>
       <inertia ixx="0.0154168" ixy="-9.95417e-07" ixz="3.38147e-06" iyy="0.0147117" iyz="-0.00213719" izz="0.0012658"/>
     </inertial>
   </link>
@@ -483,7 +397,7 @@
     </collision>
     <inertial>
       <mass value="0.577518" />
-      <origin xyz="-2.254e-05 -0.00167107 -0.0715116" rpy="0 -0 0"/>
+      <origin xyz="0.1 -0.01167107 -0.04" rpy="0 -0 0"/>
       <inertia ixx="0.00143966" ixy="3e-07" ixz="1.2e-06" iyy="0.00141763" iyz="7.596e-05" izz="0.0001972"/>
     </inertial>
   </link>
@@ -516,7 +430,7 @@
     </collision>
     <inertial>
       <mass value="0.457418" />
-      <origin xyz="-1.788e-05 0.00395812 -0.20273" rpy="0 -0 0"/>
+      <origin xyz="0.1 0.00395812 -0.00273" rpy="0 -0 0"/>
       <inertia ixx="0.00069205" ixy="-3e-08" ixz="5.2e-07" iyy="0.00068903" iyz="1.915e-05" izz="0.00013509"/>
     </inertial>
   </link>
@@ -576,7 +490,7 @@
     </collision>
     <inertial>
       <mass value="1.05156" />
-      <origin xyz="-0.048476 3.2e-06 -0.0388988" rpy="0 -0 0"/>
+      <origin xyz="0.0 0.0 -0.08" rpy="0 -0 0"/>
       <inertia ixx="0.00194072" ixy="-1.1e-07" ixz="-0.00042482" iyy="0.00209392" iyz="-1.2e-07" izz="0.00035788"/>
     </inertial>
   </link>
@@ -618,7 +532,7 @@
     <origin xyz="0.04 0.135 0.1015" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.5707963" upper="1.5707963" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
   <xacro:transmission_nx_joint name="LARM_JOINT1" />
@@ -628,7 +542,7 @@
     <origin xyz="0 0 0.066" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.44346" upper="1.0471975" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
@@ -639,7 +553,7 @@
     <origin xyz="0 0.095 -0.25" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.22173" upper="1.5707963" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
@@ -650,7 +564,7 @@
     <origin xyz="0.1805 0 -0.03" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit lower="-3.1415926" upper="1.7453292" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
   <xacro:transmission_nx_joint name="LARM_JOINT4" />
@@ -660,7 +574,7 @@
     <origin xyz="0.1495 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-3.57792" upper="1.134464" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
@@ -670,8 +584,8 @@
     <child link="LARM_JOINT5_Link"/>
     <origin xyz="0 0 -0.1335" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-4.7123889" upper="4.7123889" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <limit lower="-2.7123889" upper="2.7123889" effort="150" velocity="1.0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
   <xacro:transmission_nx_joint name="RARM_JOINT0" />
@@ -681,7 +595,7 @@
     <origin xyz="0.04 -0.135 0.1015" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit lower="-1.570796" upper="1.570796" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
@@ -692,7 +606,7 @@
     <origin xyz="0 0 0.066" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-2.44346" upper="1.047197" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
@@ -703,7 +617,7 @@
     <origin xyz="0 -0.095 -0.25" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-1.22173" upper="1.570796" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
@@ -714,7 +628,7 @@
     <origin xyz="0.1805 0 -0.03" rpy="0 0 0"/>
     <axis xyz="1 0 0"/>
     <limit lower="-1.74532" upper="3.141592" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
@@ -725,7 +639,7 @@
     <origin xyz="0.1495 0 0" rpy="0 0 0"/>
     <axis xyz="0 1 0"/>
     <limit lower="-3.5779" upper="1.134464" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
@@ -735,18 +649,61 @@
     <child link="RARM_JOINT5_Link"/>
     <origin xyz="0 0 -0.1335" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit lower="-4.712388" upper="4.712388" effort="150" velocity="1.0"/>
-    <dynamics damping="1.5" friction="0"/>
+    <limit lower="-2.712388" upper="2.712388" effort="150" velocity="1.0"/>
+    <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
 
   <!-- Gazebo plugin for ROS Control -->
   <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-      <robotNamespace>/</robotNamespace>
-      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
-    </plugin>
-    <dampingFactor>0.8</dampingFactor>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so" />
   </gazebo>
+
+  <!-- Gazebo-Specific Link Properties -->
+  <gazebo reference="CHEST_JOINT0">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="HEAD_JOINT0">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="HEAD_JOINT1">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT0">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT1">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo> 
+  <gazebo reference="LARM_JOINT2">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT3">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT4">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="LARM_JOINT5">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT0">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT1">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo> 
+  <gazebo reference="RARM_JOINT2">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT3">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT4">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo>
+  <gazebo reference="RARM_JOINT5">
+    <implicitSpringDamper>1</implicitSpringDamper>
+  </gazebo> 
 
 </robot>

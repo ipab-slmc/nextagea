@@ -25,7 +25,7 @@
 				<geometry>
 					<cylinder length="0.01" radius="0.015" />
 				</geometry>
-				<material name="blue" />
+				<material name="Blue" />
 			</visual>
 			<inertial>
 				<origin xyz="0 0 0" rpy="0 0 0" />
@@ -74,4 +74,50 @@
 			</sensor>
 		</gazebo>
 	</xacro:macro>
+
+	<xacro:property name="M_PI" value="3.1415926535897931" />
+	<xacro:property name="jnt_head_camera_displacement_x" value="0.0175" />
+	<xacro:property name="jnt_head_camera_displacement_y" value="0.0725" />
+	<xacro:property name="jnt_head_camera_displacement_z" value="0.105" />
+	<xacro:property name="jnt_head_camera_rot_y" value="0.25" />
+	<xacro:property name="link_head_camera_rot_z" value="0.05" />
+
+	<xacro:property name="jnt_hand_camera_displacement_x" value="0.0525" />
+	<xacro:property name="jnt_hand_camera_displacement_y" value="0.0525" />
+	<xacro:property name="jnt_hand_camera_displacement_z" value="0.0" />
+	<xacro:property name="jnt_hand_camera_rot_y" value="1.5708" />
+	<xacro:property name="link_hand_camera_rot_z" value="0.0" />
+
+	<!-- NOTE: The poses of headmount and hand cameras are NOT precisely adjusted to
+				the 3D model nor the actual hardware config. These configs
+				are meant for a rapid prototyping only.
+	-->
+
+	<xacro:camera_joint_link_gzplugin
+			camera_name="CAMERA_HEAD_L" link_parent="HEAD_JOINT1_Link"
+			jnt_displacement_x="${jnt_head_camera_displacement_x}" jnt_displacement_y="${jnt_head_camera_displacement_y}" jnt_displacement_z="${jnt_head_camera_displacement_z}"
+			jnt_rotation_x="0" jnt_rotation_y="${jnt_head_camera_rot_y}" jnt_rotation_z="0"
+			link_displacement_x="0.0325" link_displacement_y="0" link_displacement_z="0"
+			link_rotation_x="0" link_rotation_y="${M_PI/2}" link_rotation_z="-${link_head_camera_rot_z}" />
+
+	<xacro:camera_joint_link_gzplugin
+			camera_name="CAMERA_HEAD_R" link_parent="HEAD_JOINT1_Link"
+			jnt_displacement_x="${jnt_head_camera_displacement_x}" jnt_displacement_y="-${jnt_head_camera_displacement_y}" jnt_displacement_z="${jnt_head_camera_displacement_z}"
+			jnt_rotation_x="0" jnt_rotation_y="${jnt_head_camera_rot_y}" jnt_rotation_z="0"
+			link_displacement_x="0.0325" link_displacement_y="0" link_displacement_z="0"
+			link_rotation_x="0" link_rotation_y="${M_PI/2}" link_rotation_z="${link_head_camera_rot_z}" />
+
+	<xacro:camera_joint_link_gzplugin
+			camera_name="CAMERA_HAND_L" link_parent="LARM_JOINT5_Link"
+			jnt_displacement_x="${jnt_hand_camera_displacement_x}" jnt_displacement_y="${jnt_hand_camera_displacement_y}" jnt_displacement_z="${jnt_hand_camera_displacement_z}"
+			jnt_rotation_x="0" jnt_rotation_y="${jnt_hand_camera_rot_y}" jnt_rotation_z="0"
+			link_displacement_x="0.0325" link_displacement_y="0" link_displacement_z="0"
+			link_rotation_x="0" link_rotation_y="${M_PI/2}" link_rotation_z="-${link_hand_camera_rot_z}" />
+
+	<xacro:camera_joint_link_gzplugin
+			camera_name="CAMERA_HAND_R" link_parent="RARM_JOINT5_Link"
+			jnt_displacement_x="${jnt_hand_camera_displacement_x}" jnt_displacement_y="-${jnt_hand_camera_displacement_y}" jnt_displacement_z="${jnt_hand_camera_displacement_z}"
+			jnt_rotation_x="0" jnt_rotation_y="${jnt_hand_camera_rot_y}" jnt_rotation_z="0"
+			link_displacement_x="0.0325" link_displacement_y="0" link_displacement_z="0"
+			link_rotation_x="0" link_rotation_y="${M_PI/2}" link_rotation_z="-${link_hand_camera_rot_z}" />
 </robot>

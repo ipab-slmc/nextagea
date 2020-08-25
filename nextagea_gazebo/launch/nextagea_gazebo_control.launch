@@ -18,4 +18,17 @@
                                         rarm_controller"/>
 
   <node name="go_home" pkg="nextagea_gazebo"  type="go_home" />
+
+  <!-- start self-collision checker -->
+  <!-- use controller_type to identify whether using botharms/rarm/larm controller-->
+  <arg name="controller_type" value="botharms"/>
+  <!-- use collision_mode to select error/warn behaviour-->
+  <arg name="collision_mode" value="error"/>
+  <node name="self_collision_check" pkg="nextagea_gazebo" type="self_collision_check" output="screen" args="">
+    <param name="controller_type" value="$(arg controller_type)"/>
+    <param name="collision_mode" value="$(arg collision_mode)"/>
+    <remap from="~traj_input" to="/collision_$(arg controller_type)_controller/command" />
+    <remap from="~traj_output" to="/$(arg controller_type)_controller/command" />
+    <remap from="~joint_state" to="/joint_states" />
+  </node>
 </launch>

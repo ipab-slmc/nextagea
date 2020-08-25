@@ -26,8 +26,8 @@ class Arms:
         trajectory_message.points.append(point)
 
         trajectory_message.joint_names = [x.encode('ascii') for x in self.names]
-        trajectory_message.header.stamp = rospy.Time.now()
         time.sleep(5)
+        trajectory_message.header.stamp = rospy.Time.now()
         self.pub.publish(trajectory_message)
 
 if __name__ == '__main__':
