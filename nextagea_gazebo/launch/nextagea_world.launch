@@ -12,6 +12,9 @@
   <!--  <arg name="world_file" default="$(find turtlebot_gazebo)/worlds/playground.world" /> -->
   <arg name="world_file" default="worlds/empty.world" />
 
+  <arg name="use_ft_sensors" default="true" />
+  <arg name="use_hand_cameras" default="true" />
+
   <!-- need to remap -->
   <!-- <include file="$(find gazebo_ros)/launch/empty_world.launch"> -->
   <!--   <arg name="debug" value="$(arg debug)" /> -->
@@ -47,7 +50,7 @@
 
   <!-- Load universal robotic description format (URDF) -->
   <arg name="model" default="$(find nextagea_description)/urdf/NextageAOpen_gazebo.urdf.xacro" />
-  <param name="robot_description" command="xacro '$(arg model)'" />
+  <param name="robot_description" command="xacro '$(arg model)' use_ft_sensors:=$(arg use_ft_sensors) use_hand_cameras:=$(arg use_hand_cameras)" />
   <node ns="nextagea" pkg="gazebo_ros" type="spawn_model" name="urdf_spawner" respawn="false" output="screen"
         args="$(arg gzpose) -J LARM_JOINT2 -2.0 -J RARM_JOINT2 -2.0 -urdf -model NextageAOpen -param /robot_description -gazebo_namespace /nextagea/gazebo" />
 
