@@ -287,16 +287,31 @@
 	      <mesh filename="package://nextagea_description/urdf/meshes/LARM_JOINT5_Link_mesh.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <origin xyz="0 0 0.0065" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.013" radius="0.037"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.05156" />
+      <origin xyz="0.0 0.0 -0.08" rpy="0 -0 0"/>
+      <inertia ixx="0.00194072" ixy="1.1e-07" ixz="-0.00042482" iyy="0.00209392" iyz="1.2e-07" izz="0.00035788"/>
+    </inertial>
+  </link>
+
+  <xacro:gazebo_nx_link name="LARM_camera_Link" color="Black" />
+  <link name="LARM_camera_Link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-	      <mesh filename="package://nextagea_description/urdf/meshes/L_CAM.dae"/>
+        <mesh filename="package://nextagea_description/urdf/meshes/L_CAM.dae"/>
       </geometry>
     </visual>
     <collision>
-      <origin xyz="0 0 -0.02" rpy="0 0 0"/>
+      <origin xyz="0 0 -0.025" rpy="0 0 0"/>
       <geometry>
-        <cylinder length="0.07" radius="0.037"/>
+        <cylinder length="0.05" radius="0.037"/>
       </geometry>
     </collision>
     <collision>
@@ -473,16 +488,31 @@
 	      <mesh filename="package://nextagea_description/urdf/meshes/RARM_JOINT5_Link_mesh.dae"/>
       </geometry>
     </visual>
+    <collision>
+      <origin xyz="0 0 0.0065" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.013" radius="0.037"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.05156" />
+      <origin xyz="0.0 0.0 -0.08" rpy="0 -0 0"/>
+      <inertia ixx="0.00194072" ixy="-1.1e-07" ixz="-0.00042482" iyy="0.00209392" iyz="-1.2e-07" izz="0.00035788"/>
+    </inertial>
+  </link>
+
+  <xacro:gazebo_nx_link name="RARM_camera_Link" color="Black" />
+  <link name="RARM_camera_Link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-	      <mesh filename="package://nextagea_description/urdf/meshes/R_CAM.dae"/>
+        <mesh filename="package://nextagea_description/urdf/meshes/R_CAM.dae"/>
       </geometry>
-    </visual>    
+    </visual>
     <collision>
-      <origin xyz="0 0 -0.02" rpy="0 0 0"/>
+      <origin xyz="0 0 -0.025" rpy="0 0 0"/>
       <geometry>
-        <cylinder length="0.07" radius="0.037"/>
+        <cylinder length="0.05" radius="0.037"/>
       </geometry>
     </collision>
     <collision>
@@ -591,6 +621,13 @@
     <dynamics damping="0.5" friction="0.5"/>
   </joint>
 
+  <joint name="LARM_JOINT6" type="fixed">
+    <parent link="LARM_JOINT5_Link"/>
+    <child link="LARM_camera_Link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
   <xacro:transmission_nx_joint name="RARM_JOINT0" />
   <joint name="RARM_JOINT0" type="revolute">
     <parent link="CHEST_JOINT0_Link"/>
@@ -654,6 +691,13 @@
     <axis xyz="0 0 1"/>
     <limit lower="-2.712388" upper="2.712388" effort="150" velocity="1.0"/>
     <dynamics damping="0.5" friction="0.5"/>
+  </joint>
+
+  <joint name="RARM_JOINT6" type="fixed">
+    <parent link="RARM_JOINT5_Link"/>
+    <child link="RARM_camera_Link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
   </joint>
 
 

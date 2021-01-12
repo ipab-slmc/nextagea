@@ -80,6 +80,7 @@
     <disable_collisions link1="LARM_JOINT2_Link" link2="nextage_base" reason="Never" />
     <disable_collisions link1="LARM_JOINT3_Link" link2="LARM_JOINT4_Link" reason="Adjacent" />
     <disable_collisions link1="LARM_JOINT4_Link" link2="LARM_JOINT5_Link" reason="Adjacent" />
+    <disable_collisions link1="LARM_JOINT5_Link" link2="LARM_camera_Link" reason="Adjacent" />
 
     <disable_collisions link1="RARM_JOINT0_Link" link2="RARM_JOINT1_Link" reason="Adjacent" />
     <disable_collisions link1="RARM_JOINT0_Link" link2="WAIST" reason="Never" />
@@ -92,6 +93,7 @@
     <disable_collisions link1="RARM_JOINT2_Link" link2="nextage_base" reason="Never" />
     <disable_collisions link1="RARM_JOINT3_Link" link2="RARM_JOINT4_Link" reason="Adjacent" />
     <disable_collisions link1="RARM_JOINT4_Link" link2="RARM_JOINT5_Link" reason="Adjacent" />
+    <disable_collisions link1="RARM_JOINT5_Link" link2="RARM_camera_Link" reason="Adjacent" />
 
     <disable_collisions link1="WAIST" link2="nextage_base" reason="Adjacent" />
 </robot>
