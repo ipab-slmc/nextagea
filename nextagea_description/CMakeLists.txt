@@ -10,11 +10,6 @@ catkin_package()
 file(GLOB xacro_files urdf/*.urdf.xacro)
 xacro_add_files(${xacro_files} TARGET urdf INSTALL)
 
-install(DIRECTORY models urdf www
+install(DIRECTORY urdf
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-
-install(DIRECTORY models DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-install(DIRECTORY urdf   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-install(DIRECTORY www    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
-
