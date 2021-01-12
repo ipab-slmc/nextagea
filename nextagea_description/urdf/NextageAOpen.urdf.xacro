@@ -19,4 +19,51 @@
   <xacro:include filename="$(find nextagea_description)/urdf/NextageA_base.xacro" />
   <xacro:include filename="$(find nextagea_description)/urdf/NextageA_robot.xacro" />
 
+  <xacro:macro name="nxao_camera" params="prefix parent">
+    <xacro:if value="${prefix == 'L'}">
+      <xacro:property name="m" value="+1" />
+    </xacro:if>
+
+    <xacro:if value="${prefix == 'R'}">
+      <xacro:property name="m" value="-1" />
+    </xacro:if>
+
+    <xacro:gazebo_nx_link name="${prefix}ARM_camera_Link" color="Black" />
+    <link name="${prefix}ARM_camera_Link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://nextagea_description/urdf/meshes/${prefix}_CAM.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 -0.025" rpy="0 0 0"/>
+        <geometry>
+          <cylinder length="0.05" radius="0.037"/>
+        </geometry>
+      </collision>
+      <collision>
+        <origin xyz="0.0525 ${m * 0.029} -0.02" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.057 0.106 0.042"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="1.05156" />
+        <origin xyz="0.0 0.0 -0.08" rpy="0 -0 0"/>
+        <inertia ixx="0.00194072" ixy="${m * 1.1e-07}" ixz="-0.00042482" iyy="0.00209392" iyz="${m * 1.2e-07}" izz="0.00035788"/>
+      </inertial>
+    </link>
+
+    <joint name="${prefix}ARM_JOINT6" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${prefix}ARM_camera_Link"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:nxao_camera prefix="L" parent="LARM_JOINT5_Link" />
+  <xacro:nxao_camera prefix="R" parent="RARM_JOINT5_Link" />
+
 </robot>
