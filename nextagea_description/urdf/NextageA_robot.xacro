@@ -83,7 +83,7 @@
       <xacro:nxa_box_inertia_def x="0.25" y="0.25" z="0.3" mass="10"/>
     </inertial>
   </link>
-  
+
   <xacro:gazebo_nx_link name="HEAD_JOINT0_Link" color="Black" />
   <link name="HEAD_JOINT0_Link">
     <visual>
@@ -185,7 +185,7 @@
       <inertia ixx="0.0154168" ixy="9.95417e-07" ixz="3.38147e-06" iyy="0.0147117" iyz="0.00213719" izz="0.0012658"/>
     </inertial>
   </link>
-  
+
   <xacro:gazebo_nx_link name="LARM_JOINT2_Link" color="Black" />
   <link name="LARM_JOINT2_Link">
     <visual>
@@ -251,7 +251,7 @@
       <inertia ixx="0.00069205" ixy="3e-08" ixz="5.2e-07" iyy="0.00068903" iyz="-1.915e-05" izz="0.00013509"/>
     </inertial>
   </link>
-  
+
   <xacro:gazebo_nx_link name="LARM_JOINT4_Link" color="Black" />
   <link name="LARM_JOINT4_Link">
     <visual>
@@ -278,7 +278,7 @@
       <inertia ixx="0.00052016" ixy="1.69e-06" ixz="7.9e-06" iyy="0.00050569" iyz="-5.377e-05" izz="0.00014004"/>
     </inertial>
   </link>
-  
+
   <xacro:gazebo_nx_link name="LARM_JOINT5_Link" color="Black" />
   <link name="LARM_JOINT5_Link">
     <visual>
@@ -359,7 +359,7 @@
       <inertia ixx="0.00207537" ixy="-0.00011276" ixz="8.927e-05" iyy="0.00240295" iyz="4.57e-05" izz="0.00141912"/>
     </inertial>
   </link>
-  
+
   <xacro:gazebo_nx_link name="RARM_JOINT1_Link" color="Black" />
   <link name="RARM_JOINT1_Link">
     <visual>
@@ -386,7 +386,7 @@
       <inertia ixx="0.0154168" ixy="-9.95417e-07" ixz="3.38147e-06" iyy="0.0147117" iyz="-0.00213719" izz="0.0012658"/>
     </inertial>
   </link>
-  
+
   <xacro:gazebo_nx_link name="RARM_JOINT2_Link" color="Black" />
   <link name="RARM_JOINT2_Link">
     <visual>
@@ -419,7 +419,7 @@
       <inertia ixx="0.00143966" ixy="3e-07" ixz="1.2e-06" iyy="0.00141763" iyz="7.596e-05" izz="0.0001972"/>
     </inertial>
   </link>
-  
+
   <xacro:gazebo_nx_link name="RARM_JOINT3_Link" color="Black" />
   <link name="RARM_JOINT3_Link">
     <visual>
@@ -452,7 +452,7 @@
       <inertia ixx="0.00069205" ixy="-3e-08" ixz="5.2e-07" iyy="0.00068903" iyz="1.915e-05" izz="0.00013509"/>
     </inertial>
   </link>
-  
+
   <xacro:gazebo_nx_link name="RARM_JOINT4_Link" color="Black" />
   <link name="RARM_JOINT4_Link">
     <visual>
@@ -725,7 +725,7 @@
   </gazebo>
   <gazebo reference="LARM_JOINT1">
     <implicitSpringDamper>1</implicitSpringDamper>
-  </gazebo> 
+  </gazebo>
   <gazebo reference="LARM_JOINT2">
     <implicitSpringDamper>1</implicitSpringDamper>
   </gazebo>
@@ -743,7 +743,7 @@
   </gazebo>
   <gazebo reference="RARM_JOINT1">
     <implicitSpringDamper>1</implicitSpringDamper>
-  </gazebo> 
+  </gazebo>
   <gazebo reference="RARM_JOINT2">
     <implicitSpringDamper>1</implicitSpringDamper>
   </gazebo>
@@ -755,6 +755,6 @@
   </gazebo>
   <gazebo reference="RARM_JOINT5">
     <implicitSpringDamper>1</implicitSpringDamper>
-  </gazebo> 
+  </gazebo>
 
 </robot>
