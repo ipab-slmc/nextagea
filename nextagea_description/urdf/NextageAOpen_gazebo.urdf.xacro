@@ -6,7 +6,6 @@
 
   <xacro:include filename="$(find nextagea_description)/urdf/common.xacro" />
   <xacro:include filename="$(find nextagea_description)/urdf/NextageAOpen.urdf.xacro" />
-  <xacro:include filename="$(find nextagea_description)/urdf/nxao_gz_camera.xacro" />
 
   <!-- Used for fixing robot to Gazebo 'base_link' -->
   <xacro:if value="${fixed_base}">

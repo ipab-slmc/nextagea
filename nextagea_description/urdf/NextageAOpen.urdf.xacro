@@ -18,6 +18,7 @@
 
   <xacro:include filename="$(find nextagea_description)/urdf/NextageA_base.xacro" />
   <xacro:include filename="$(find nextagea_description)/urdf/NextageA_robot.xacro" />
+  <xacro:include filename="$(find nextagea_description)/urdf/nxao_gz_camera.xacro" />
 
   <xacro:arg name="use_hand_cameras" default="false"/>
   <xacro:arg name="use_ft_sensors" default="false"/>
@@ -64,6 +65,15 @@
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
+
+    <xacro:camera_joint_link_gzplugin
+      camera_name="CAMERA_HAND_${prefix}" link_parent="${parent}"
+      jnt_displacement_x="${jnt_hand_camera_displacement_x}"
+      jnt_displacement_y="${m * jnt_hand_camera_displacement_y}"
+      jnt_displacement_z="${jnt_hand_camera_displacement_z}"
+      jnt_rotation_x="0" jnt_rotation_y="${jnt_hand_camera_rot_y}" jnt_rotation_z="0"
+      link_displacement_x="0.0325" link_displacement_y="0" link_displacement_z="0"
+      link_rotation_x="0" link_rotation_y="${M_PI/2}" link_rotation_z="-${link_hand_camera_rot_z}" />
   </xacro:macro>
 
   <xacro:macro name="nxao_ft_sensor" params="prefix parent">
